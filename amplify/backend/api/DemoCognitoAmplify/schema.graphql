@@ -1,4 +1,11 @@
-type Use @model @auth(rules: [{allow: owner, ownerField: "usoOwner", operations: [create, update, delete, read]}, {allow: private, provider: userPools, operations: [read]}, {allow: private, provider: iam, operations: [read, update]}]) {
+type Use @model @auth(
+  rules: [
+    { allow: owner, ownerField: "usoOwner", operations: [create, update, delete, read] },
+    { allow: groups, groups: ["Administrador"], operations: [create, update, delete, read] },
+    { allow: groups, groups: ["Empresa"], operations: [read, update] },
+    { allow: owner, ownerField: "deviceOwner", operations: [read] }
+  ]
+) {
   id: ID!
   cardNumber: String
   balance: Float
@@ -9,16 +16,31 @@ type Use @model @auth(rules: [{allow: owner, ownerField: "usoOwner", operations:
   device: Device @belongsTo(fields: ["deviceID"])
 }
 
-type Bus @model @auth(rules: [{allow: owner, ownerField: "busOwner", operations: [create, update, delete, read]}, {allow: private, provider: userPools, operations: [read]}, {allow: private, provider: iam, operations: [read, update]}]) {
+type Device @model @auth(
+  rules: [
+    { allow: owner, ownerField: "deviceOwner", operations: [create, update, delete, read] },
+    { allow: groups, groups: ["Administrador"], operations: [create, update, delete, read] },
+    { allow: groups, groups: ["Empresa"], operations: [read, update] }
+  ]
+) {
   id: ID!
-  plate: String
-  status: Boolean
-  busOwner: String
+  imei: String
+  civicaSerial: String
+  lastEditorId: Int
+  deviceOwner: String
   companyID: ID! @index(name: "byCompany")
   company: Company @belongsTo(fields: ["companyID"])
+  bus: Bus @hasOne
+  uses: [Use] @hasMany(indexName: "byDevice", fields: ["id"])
 }
 
-type Company @model @auth(rules: [{allow: owner, ownerField: "companyOwner", operations: [create, update, delete, read]}, {allow: private, provider: userPools, operations: [read]}, {allow: private, provider: iam, operations: [read, update]}]) {
+type Company @model @auth(
+  rules: [
+    { allow: owner, ownerField: "companyOwner", operations: [create, update, delete, read] },
+    { allow: groups, groups: ["Administrador"], operations: [create, update, delete, read] },
+    { allow: groups, groups: ["Dispositivo"], operations: [read] } # Permitir acceso a dispositivos autenticados
+  ]
+) {
   id: ID!
   name: String
   rutaCivica: String
@@ -29,14 +51,17 @@ type Company @model @auth(rules: [{allow: owner, ownerField: "companyOwner", ope
   buses: [Bus] @hasMany(indexName: "byCompany", fields: ["id"])
 }
 
-type Device @model @auth(rules: [{allow: owner, ownerField: "deviceOwner", operations: [create, update, delete, read]}, {allow: private, provider: userPools, operations: [create, update, delete, read]}, {allow: private, provider: iam, operations: [read, update]}]) {
+type Bus @model @auth(
+  rules: [
+    { allow: owner, ownerField: "busOwner", operations: [create, update, delete, read] },
+    { allow: groups, groups: ["Administrador"], operations: [create, update, delete, read] },
+    { allow: groups, groups: ["Empresa"], operations: [read, update] }
+  ]
+) {
   id: ID!
-  imei: String
-  civicaSerial: String
-  lastEditorId: Int
-  deviceOwner: String
+  plate: String
+  status: Boolean
+  busOwner: String
   companyID: ID! @index(name: "byCompany")
   company: Company @belongsTo(fields: ["companyID"])
-  bus: Bus @hasOne
-  uses: [Use] @hasMany(indexName: "byDevice", fields: ["id"])
-} 
+}

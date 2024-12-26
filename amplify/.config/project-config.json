@@ -2,7 +2,7 @@
   "providers": [
     "awscloudformation"
   ],
-  "projectName": "DemoCognitoAmplify",
+  "projectName": "RolCognitoAmplify",
   "version": "3.1",
   "frontend": "android",
   "android": {

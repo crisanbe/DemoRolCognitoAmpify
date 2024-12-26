@@ -1,4 +1,30 @@
 {
+  "devrol": {
+    "awscloudformation": {
+      "AuthRoleName": "amplify-rolcognitoamplify-devrol-54564-authRole",
+      "UnauthRoleArn": "arn:aws:iam::808440304833:role/amplify-rolcognitoamplify-devrol-54564-unauthRole",
+      "AuthRoleArn": "arn:aws:iam::808440304833:role/amplify-rolcognitoamplify-devrol-54564-authRole",
+      "Region": "us-east-1",
+      "DeploymentBucketName": "amplify-rolcognitoamplify-devrol-54564-deployment",
+      "UnauthRoleName": "amplify-rolcognitoamplify-devrol-54564-unauthRole",
+      "StackName": "amplify-rolcognitoamplify-devrol-54564",
+      "StackId": "arn:aws:cloudformation:us-east-1:808440304833:stack/amplify-rolcognitoamplify-devrol-54564/95e9b670-c287-11ef-97f6-0e67ecf200f5",
+      "AmplifyAppId": "d1v9s0bpxwtm7h"
+    },
+    "categories": {
+      "auth": {
+        "democognitoamplify": {
+          "userPoolId": "us-east-1_2d8DzKOLP",
+          "userPoolName": "cognito-metro-dev-cobros-tramos",
+          "webClientId": "6pf9hml1rcika26sevd83sbb65",
+          "nativeClientId": "6pf9hml1rcika26sevd83sbb65"
+        }
+      },
+      "api": {
+        "DemoCognitoAmplify": {}
+      }
+    }
+  },
   "develop": {
     "awscloudformation": {
       "AuthRoleName": "amplify-democognitoamplify-develop-34411-authRole",

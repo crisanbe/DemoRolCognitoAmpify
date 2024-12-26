@@ -25,8 +25,8 @@ import static com.amplifyframework.core.model.query.predicate.QueryField.field;
 @SuppressWarnings("all")
 @ModelConfig(pluralName = "Buses", type = Model.Type.USER, version = 1, authRules = {
   @AuthRule(allow = AuthStrategy.OWNER, ownerField = "busOwner", identityClaim = "cognito:username", provider = "userPools", operations = { ModelOperation.CREATE, ModelOperation.UPDATE, ModelOperation.DELETE, ModelOperation.READ }),
-  @AuthRule(allow = AuthStrategy.PRIVATE, provider = "userPools", operations = { ModelOperation.READ }),
-  @AuthRule(allow = AuthStrategy.PRIVATE, provider = "iam", operations = { ModelOperation.READ, ModelOperation.UPDATE })
+  @AuthRule(allow = AuthStrategy.GROUPS, groupClaim = "cognito:groups", groups = { "Administrador" }, provider = "userPools", operations = { ModelOperation.CREATE, ModelOperation.UPDATE, ModelOperation.DELETE, ModelOperation.READ }),
+  @AuthRule(allow = AuthStrategy.GROUPS, groupClaim = "cognito:groups", groups = { "Empresa" }, provider = "userPools", operations = { ModelOperation.READ, ModelOperation.UPDATE })
 })
 @Index(name = "byCompany", fields = {"companyID"})
 public final class Bus implements Model {

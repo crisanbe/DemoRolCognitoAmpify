@@ -13,6 +13,8 @@ import com.amplifyframework.datastore.DataStoreConflictHandler
 import com.amplifyframework.datastore.events.NetworkStatusEvent
 import com.amplifyframework.datastore.generated.model.AmplifyModelProvider
 import com.amplifyframework.datastore.generated.model.Bus
+import com.amplifyframework.datastore.generated.model.Company
+import com.amplifyframework.datastore.generated.model.Device
 import com.amplifyframework.datastore.generated.model.Use
 import com.amplifyframework.datastore.syncengine.RetryHandler
 import com.amplifyframework.hub.HubChannel
@@ -105,7 +107,8 @@ class MyApplication : Application() {
                         DataStoreConfiguration.builder()
                             .syncExpression(Use::class.java) { QueryField.field("usoOwner").eq(username) }
                             .syncExpression(Bus::class.java) { QueryField.field("busOwner").eq(username) }
-                            //.syncExpression(Route::class.java) { QueryField.field("routeOwner").eq(username) }
+                            .syncExpression(Device::class.java) { QueryField.field("deviceOwner").eq(username) }
+                            .syncExpression(Company::class.java) { QueryField.field("companyOwner").eq(username) }
                             .build()
                     )
                     .build()

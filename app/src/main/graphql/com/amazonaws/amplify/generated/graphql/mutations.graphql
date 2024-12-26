@@ -1,324 +1,133 @@
 # this is an auto generated file. This will be overwritten
 
-mutation CreateUso(
-  $input: CreateUsoInput!
-  $condition: ModelUsoConditionInput
+mutation CreateUse(
+  $input: CreateUseInput!
+  $condition: ModelUseConditionInput
 ) {
-  createUso(input: $input, condition: $condition) {
+  createUse(input: $input, condition: $condition) {
     id
     cardNumber
     balance
     sequenceNumber
     status
-    createdAt
-    updatedAt
     usoOwner
-    isVerified
-    tickets {
-      nextToken
-      startedAt
+    deviceID
+    device {
+      id
+      imei
+      civicaSerial
+      lastEditorId
+      deviceOwner
+      companyID
+      createdAt
+      updatedAt
+      _version
+      _deleted
+      _lastChangedAt
+      deviceBusId
       __typename
     }
+    createdAt
+    updatedAt
     _version
     _deleted
     _lastChangedAt
+    deviceOwner
     __typename
   }
 }
 
-mutation UpdateUso(
-  $input: UpdateUsoInput!
-  $condition: ModelUsoConditionInput
+mutation UpdateUse(
+  $input: UpdateUseInput!
+  $condition: ModelUseConditionInput
 ) {
-  updateUso(input: $input, condition: $condition) {
+  updateUse(input: $input, condition: $condition) {
     id
     cardNumber
     balance
     sequenceNumber
     status
-    createdAt
-    updatedAt
     usoOwner
-    isVerified
-    tickets {
-      nextToken
-      startedAt
+    deviceID
+    device {
+      id
+      imei
+      civicaSerial
+      lastEditorId
+      deviceOwner
+      companyID
+      createdAt
+      updatedAt
+      _version
+      _deleted
+      _lastChangedAt
+      deviceBusId
       __typename
     }
+    createdAt
+    updatedAt
     _version
     _deleted
     _lastChangedAt
+    deviceOwner
     __typename
   }
 }
 
-mutation DeleteUso(
-  $input: DeleteUsoInput!
-  $condition: ModelUsoConditionInput
+mutation DeleteUse(
+  $input: DeleteUseInput!
+  $condition: ModelUseConditionInput
 ) {
-  deleteUso(input: $input, condition: $condition) {
+  deleteUse(input: $input, condition: $condition) {
     id
     cardNumber
     balance
     sequenceNumber
     status
-    createdAt
-    updatedAt
     usoOwner
-    isVerified
-    tickets {
-      nextToken
-      startedAt
-      __typename
-    }
-    _version
-    _deleted
-    _lastChangedAt
-    __typename
-  }
-}
-
-mutation CreateTicket(
-  $input: CreateTicketInput!
-  $condition: ModelTicketConditionInput
-) {
-  createTicket(input: $input, condition: $condition) {
-    id
-    ticketNumber
-    issueDate
-    isValid
-    usoID
-    uso {
+    deviceID
+    device {
       id
-      cardNumber
-      balance
-      sequenceNumber
-      status
-      createdAt
-      updatedAt
-      usoOwner
-      isVerified
-      _version
-      _deleted
-      _lastChangedAt
-      __typename
-    }
-    ticketOwner
-    createdAt
-    updatedAt
-    _version
-    _deleted
-    _lastChangedAt
-    __typename
-  }
-}
-
-mutation UpdateTicket(
-  $input: UpdateTicketInput!
-  $condition: ModelTicketConditionInput
-) {
-  updateTicket(input: $input, condition: $condition) {
-    id
-    ticketNumber
-    issueDate
-    isValid
-    usoID
-    uso {
-      id
-      cardNumber
-      balance
-      sequenceNumber
-      status
-      createdAt
-      updatedAt
-      usoOwner
-      isVerified
-      _version
-      _deleted
-      _lastChangedAt
-      __typename
-    }
-    ticketOwner
-    createdAt
-    updatedAt
-    _version
-    _deleted
-    _lastChangedAt
-    __typename
-  }
-}
-
-mutation DeleteTicket(
-  $input: DeleteTicketInput!
-  $condition: ModelTicketConditionInput
-) {
-  deleteTicket(input: $input, condition: $condition) {
-    id
-    ticketNumber
-    issueDate
-    isValid
-    usoID
-    uso {
-      id
-      cardNumber
-      balance
-      sequenceNumber
-      status
-      createdAt
-      updatedAt
-      usoOwner
-      isVerified
-      _version
-      _deleted
-      _lastChangedAt
-      __typename
-    }
-    ticketOwner
-    createdAt
-    updatedAt
-    _version
-    _deleted
-    _lastChangedAt
-    __typename
-  }
-}
-
-mutation CreateRoute(
-  $input: CreateRouteInput!
-  $condition: ModelRouteConditionInput
-) {
-  createRoute(input: $input, condition: $condition) {
-    id
-    routeName
-    fare
-    status
-    createdAt
-    updatedAt
-    busID
-    bus {
-      id
-      plate
-      description
-      state
-      createAt
-      updateAt
-      lastEditorID
+      imei
+      civicaSerial
+      lastEditorId
+      deviceOwner
       companyID
-      deviceID
-      transporterID
-      busOwner
       createdAt
       updatedAt
       _version
       _deleted
       _lastChangedAt
+      deviceBusId
       __typename
     }
-    routeOwner
-    _version
-    _deleted
-    _lastChangedAt
-    __typename
-  }
-}
-
-mutation UpdateRoute(
-  $input: UpdateRouteInput!
-  $condition: ModelRouteConditionInput
-) {
-  updateRoute(input: $input, condition: $condition) {
-    id
-    routeName
-    fare
-    status
     createdAt
     updatedAt
-    busID
-    bus {
-      id
-      plate
-      description
-      state
-      createAt
-      updateAt
-      lastEditorID
-      companyID
-      deviceID
-      transporterID
-      busOwner
-      createdAt
-      updatedAt
-      _version
-      _deleted
-      _lastChangedAt
-      __typename
-    }
-    routeOwner
     _version
     _deleted
     _lastChangedAt
+    deviceOwner
     __typename
   }
 }
 
-mutation DeleteRoute(
-  $input: DeleteRouteInput!
-  $condition: ModelRouteConditionInput
+mutation CreateDevice(
+  $input: CreateDeviceInput!
+  $condition: ModelDeviceConditionInput
 ) {
-  deleteRoute(input: $input, condition: $condition) {
+  createDevice(input: $input, condition: $condition) {
     id
-    routeName
-    fare
-    status
-    createdAt
-    updatedAt
-    busID
-    bus {
-      id
-      plate
-      description
-      state
-      createAt
-      updateAt
-      lastEditorID
-      companyID
-      deviceID
-      transporterID
-      busOwner
-      createdAt
-      updatedAt
-      _version
-      _deleted
-      _lastChangedAt
-      __typename
-    }
-    routeOwner
-    _version
-    _deleted
-    _lastChangedAt
-    __typename
-  }
-}
-
-mutation CreateBus(
-  $input: CreateBusInput!
-  $condition: ModelBusConditionInput
-) {
-  createBus(input: $input, condition: $condition) {
-    id
-    plate
-    description
-    state
-    createAt
-    updateAt
-    lastEditorID
+    imei
+    civicaSerial
+    lastEditorId
+    deviceOwner
     companyID
     company {
       id
       name
       rutaCivica
       commissionPerTicket
-      lastEditorID
+      lastEditorId
       companyOwner
       createdAt
       updatedAt
@@ -327,16 +136,12 @@ mutation CreateBus(
       _lastChangedAt
       __typename
     }
-    deviceID
-    device {
+    bus {
       id
-      imei
-      civicaSerial
-      createAt
-      updateAt
-      lastEditorID
+      plate
+      status
+      busOwner
       companyID
-      deviceOwner
       createdAt
       updatedAt
       _version
@@ -344,21 +149,7 @@ mutation CreateBus(
       _lastChangedAt
       __typename
     }
-    transporterID
-    transporter {
-      id
-      name
-      contactInfo
-      transporterOwner
-      createdAt
-      updatedAt
-      _version
-      _deleted
-      _lastChangedAt
-      __typename
-    }
-    busOwner
-    routes {
+    uses {
       nextToken
       startedAt
       __typename
@@ -368,29 +159,28 @@ mutation CreateBus(
     _version
     _deleted
     _lastChangedAt
+    deviceBusId
     __typename
   }
 }
 
-mutation UpdateBus(
-  $input: UpdateBusInput!
-  $condition: ModelBusConditionInput
+mutation UpdateDevice(
+  $input: UpdateDeviceInput!
+  $condition: ModelDeviceConditionInput
 ) {
-  updateBus(input: $input, condition: $condition) {
+  updateDevice(input: $input, condition: $condition) {
     id
-    plate
-    description
-    state
-    createAt
-    updateAt
-    lastEditorID
+    imei
+    civicaSerial
+    lastEditorId
+    deviceOwner
     companyID
     company {
       id
       name
       rutaCivica
       commissionPerTicket
-      lastEditorID
+      lastEditorId
       companyOwner
       createdAt
       updatedAt
@@ -399,16 +189,12 @@ mutation UpdateBus(
       _lastChangedAt
       __typename
     }
-    deviceID
-    device {
+    bus {
       id
-      imei
-      civicaSerial
-      createAt
-      updateAt
-      lastEditorID
+      plate
+      status
+      busOwner
       companyID
-      deviceOwner
       createdAt
       updatedAt
       _version
@@ -416,21 +202,7 @@ mutation UpdateBus(
       _lastChangedAt
       __typename
     }
-    transporterID
-    transporter {
-      id
-      name
-      contactInfo
-      transporterOwner
-      createdAt
-      updatedAt
-      _version
-      _deleted
-      _lastChangedAt
-      __typename
-    }
-    busOwner
-    routes {
+    uses {
       nextToken
       startedAt
       __typename
@@ -440,29 +212,28 @@ mutation UpdateBus(
     _version
     _deleted
     _lastChangedAt
+    deviceBusId
     __typename
   }
 }
 
-mutation DeleteBus(
-  $input: DeleteBusInput!
-  $condition: ModelBusConditionInput
+mutation DeleteDevice(
+  $input: DeleteDeviceInput!
+  $condition: ModelDeviceConditionInput
 ) {
-  deleteBus(input: $input, condition: $condition) {
+  deleteDevice(input: $input, condition: $condition) {
     id
-    plate
-    description
-    state
-    createAt
-    updateAt
-    lastEditorID
+    imei
+    civicaSerial
+    lastEditorId
+    deviceOwner
     companyID
     company {
       id
       name
       rutaCivica
       commissionPerTicket
-      lastEditorID
+      lastEditorId
       companyOwner
       createdAt
       updatedAt
@@ -471,16 +242,12 @@ mutation DeleteBus(
       _lastChangedAt
       __typename
     }
-    deviceID
-    device {
+    bus {
       id
-      imei
-      civicaSerial
-      createAt
-      updateAt
-      lastEditorID
+      plate
+      status
+      busOwner
       companyID
-      deviceOwner
       createdAt
       updatedAt
       _version
@@ -488,21 +255,7 @@ mutation DeleteBus(
       _lastChangedAt
       __typename
     }
-    transporterID
-    transporter {
-      id
-      name
-      contactInfo
-      transporterOwner
-      createdAt
-      updatedAt
-      _version
-      _deleted
-      _lastChangedAt
-      __typename
-    }
-    busOwner
-    routes {
+    uses {
       nextToken
       startedAt
       __typename
@@ -512,6 +265,7 @@ mutation DeleteBus(
     _version
     _deleted
     _lastChangedAt
+    deviceBusId
     __typename
   }
 }
@@ -525,14 +279,14 @@ mutation CreateCompany(
     name
     rutaCivica
     commissionPerTicket
-    lastEditorID
+    lastEditorId
     companyOwner
-    buses {
+    devices {
       nextToken
       startedAt
       __typename
     }
-    devices {
+    buses {
       nextToken
       startedAt
       __typename
@@ -555,14 +309,14 @@ mutation UpdateCompany(
     name
     rutaCivica
     commissionPerTicket
-    lastEditorID
+    lastEditorId
     companyOwner
-    buses {
+    devices {
       nextToken
       startedAt
       __typename
     }
-    devices {
+    buses {
       nextToken
       startedAt
       __typename
@@ -585,41 +339,18 @@ mutation DeleteCompany(
     name
     rutaCivica
     commissionPerTicket
-    lastEditorID
+    lastEditorId
     companyOwner
-    buses {
-      nextToken
-      startedAt
-      __typename
-    }
     devices {
       nextToken
       startedAt
       __typename
     }
-    createdAt
-    updatedAt
-    _version
-    _deleted
-    _lastChangedAt
-    __typename
-  }
-}
-
-mutation CreateTransporter(
-  $input: CreateTransporterInput!
-  $condition: ModelTransporterConditionInput
-) {
-  createTransporter(input: $input, condition: $condition) {
-    id
-    name
-    contactInfo
     buses {
       nextToken
       startedAt
       __typename
     }
-    transporterOwner
     createdAt
     updatedAt
     _version
@@ -629,70 +360,22 @@ mutation CreateTransporter(
   }
 }
 
-mutation UpdateTransporter(
-  $input: UpdateTransporterInput!
-  $condition: ModelTransporterConditionInput
+mutation CreateBus(
+  $input: CreateBusInput!
+  $condition: ModelBusConditionInput
 ) {
-  updateTransporter(input: $input, condition: $condition) {
+  createBus(input: $input, condition: $condition) {
     id
-    name
-    contactInfo
-    buses {
-      nextToken
-      startedAt
-      __typename
-    }
-    transporterOwner
-    createdAt
-    updatedAt
-    _version
-    _deleted
-    _lastChangedAt
-    __typename
-  }
-}
-
-mutation DeleteTransporter(
-  $input: DeleteTransporterInput!
-  $condition: ModelTransporterConditionInput
-) {
-  deleteTransporter(input: $input, condition: $condition) {
-    id
-    name
-    contactInfo
-    buses {
-      nextToken
-      startedAt
-      __typename
-    }
-    transporterOwner
-    createdAt
-    updatedAt
-    _version
-    _deleted
-    _lastChangedAt
-    __typename
-  }
-}
-
-mutation CreateDevice(
-  $input: CreateDeviceInput!
-  $condition: ModelDeviceConditionInput
-) {
-  createDevice(input: $input, condition: $condition) {
-    id
-    imei
-    civicaSerial
-    createAt
-    updateAt
-    lastEditorID
+    plate
+    status
+    busOwner
     companyID
     company {
       id
       name
       rutaCivica
       commissionPerTicket
-      lastEditorID
+      lastEditorId
       companyOwner
       createdAt
       updatedAt
@@ -701,12 +384,6 @@ mutation CreateDevice(
       _lastChangedAt
       __typename
     }
-    buses {
-      nextToken
-      startedAt
-      __typename
-    }
-    deviceOwner
     createdAt
     updatedAt
     _version
@@ -716,24 +393,22 @@ mutation CreateDevice(
   }
 }
 
-mutation UpdateDevice(
-  $input: UpdateDeviceInput!
-  $condition: ModelDeviceConditionInput
+mutation UpdateBus(
+  $input: UpdateBusInput!
+  $condition: ModelBusConditionInput
 ) {
-  updateDevice(input: $input, condition: $condition) {
+  updateBus(input: $input, condition: $condition) {
     id
-    imei
-    civicaSerial
-    createAt
-    updateAt
-    lastEditorID
+    plate
+    status
+    busOwner
     companyID
     company {
       id
       name
       rutaCivica
       commissionPerTicket
-      lastEditorID
+      lastEditorId
       companyOwner
       createdAt
       updatedAt
@@ -742,12 +417,6 @@ mutation UpdateDevice(
       _lastChangedAt
       __typename
     }
-    buses {
-      nextToken
-      startedAt
-      __typename
-    }
-    deviceOwner
     createdAt
     updatedAt
     _version
@@ -757,24 +426,22 @@ mutation UpdateDevice(
   }
 }
 
-mutation DeleteDevice(
-  $input: DeleteDeviceInput!
-  $condition: ModelDeviceConditionInput
+mutation DeleteBus(
+  $input: DeleteBusInput!
+  $condition: ModelBusConditionInput
 ) {
-  deleteDevice(input: $input, condition: $condition) {
+  deleteBus(input: $input, condition: $condition) {
     id
-    imei
-    civicaSerial
-    createAt
-    updateAt
-    lastEditorID
+    plate
+    status
+    busOwner
     companyID
     company {
       id
       name
       rutaCivica
       commissionPerTicket
-      lastEditorID
+      lastEditorId
       companyOwner
       createdAt
       updatedAt
@@ -783,12 +450,6 @@ mutation DeleteDevice(
       _lastChangedAt
       __typename
     }
-    buses {
-      nextToken
-      startedAt
-      __typename
-    }
-    deviceOwner
     createdAt
     updatedAt
     _version
