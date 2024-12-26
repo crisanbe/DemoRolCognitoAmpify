@@ -1,0 +1,799 @@
+# this is an auto generated file. This will be overwritten
+
+mutation CreateUso(
+  $input: CreateUsoInput!
+  $condition: ModelUsoConditionInput
+) {
+  createUso(input: $input, condition: $condition) {
+    id
+    cardNumber
+    balance
+    sequenceNumber
+    status
+    createdAt
+    updatedAt
+    usoOwner
+    isVerified
+    tickets {
+      nextToken
+      startedAt
+      __typename
+    }
+    _version
+    _deleted
+    _lastChangedAt
+    __typename
+  }
+}
+
+mutation UpdateUso(
+  $input: UpdateUsoInput!
+  $condition: ModelUsoConditionInput
+) {
+  updateUso(input: $input, condition: $condition) {
+    id
+    cardNumber
+    balance
+    sequenceNumber
+    status
+    createdAt
+    updatedAt
+    usoOwner
+    isVerified
+    tickets {
+      nextToken
+      startedAt
+      __typename
+    }
+    _version
+    _deleted
+    _lastChangedAt
+    __typename
+  }
+}
+
+mutation DeleteUso(
+  $input: DeleteUsoInput!
+  $condition: ModelUsoConditionInput
+) {
+  deleteUso(input: $input, condition: $condition) {
+    id
+    cardNumber
+    balance
+    sequenceNumber
+    status
+    createdAt
+    updatedAt
+    usoOwner
+    isVerified
+    tickets {
+      nextToken
+      startedAt
+      __typename
+    }
+    _version
+    _deleted
+    _lastChangedAt
+    __typename
+  }
+}
+
+mutation CreateTicket(
+  $input: CreateTicketInput!
+  $condition: ModelTicketConditionInput
+) {
+  createTicket(input: $input, condition: $condition) {
+    id
+    ticketNumber
+    issueDate
+    isValid
+    usoID
+    uso {
+      id
+      cardNumber
+      balance
+      sequenceNumber
+      status
+      createdAt
+      updatedAt
+      usoOwner
+      isVerified
+      _version
+      _deleted
+      _lastChangedAt
+      __typename
+    }
+    ticketOwner
+    createdAt
+    updatedAt
+    _version
+    _deleted
+    _lastChangedAt
+    __typename
+  }
+}
+
+mutation UpdateTicket(
+  $input: UpdateTicketInput!
+  $condition: ModelTicketConditionInput
+) {
+  updateTicket(input: $input, condition: $condition) {
+    id
+    ticketNumber
+    issueDate
+    isValid
+    usoID
+    uso {
+      id
+      cardNumber
+      balance
+      sequenceNumber
+      status
+      createdAt
+      updatedAt
+      usoOwner
+      isVerified
+      _version
+      _deleted
+      _lastChangedAt
+      __typename
+    }
+    ticketOwner
+    createdAt
+    updatedAt
+    _version
+    _deleted
+    _lastChangedAt
+    __typename
+  }
+}
+
+mutation DeleteTicket(
+  $input: DeleteTicketInput!
+  $condition: ModelTicketConditionInput
+) {
+  deleteTicket(input: $input, condition: $condition) {
+    id
+    ticketNumber
+    issueDate
+    isValid
+    usoID
+    uso {
+      id
+      cardNumber
+      balance
+      sequenceNumber
+      status
+      createdAt
+      updatedAt
+      usoOwner
+      isVerified
+      _version
+      _deleted
+      _lastChangedAt
+      __typename
+    }
+    ticketOwner
+    createdAt
+    updatedAt
+    _version
+    _deleted
+    _lastChangedAt
+    __typename
+  }
+}
+
+mutation CreateRoute(
+  $input: CreateRouteInput!
+  $condition: ModelRouteConditionInput
+) {
+  createRoute(input: $input, condition: $condition) {
+    id
+    routeName
+    fare
+    status
+    createdAt
+    updatedAt
+    busID
+    bus {
+      id
+      plate
+      description
+      state
+      createAt
+      updateAt
+      lastEditorID
+      companyID
+      deviceID
+      transporterID
+      busOwner
+      createdAt
+      updatedAt
+      _version
+      _deleted
+      _lastChangedAt
+      __typename
+    }
+    routeOwner
+    _version
+    _deleted
+    _lastChangedAt
+    __typename
+  }
+}
+
+mutation UpdateRoute(
+  $input: UpdateRouteInput!
+  $condition: ModelRouteConditionInput
+) {
+  updateRoute(input: $input, condition: $condition) {
+    id
+    routeName
+    fare
+    status
+    createdAt
+    updatedAt
+    busID
+    bus {
+      id
+      plate
+      description
+      state
+      createAt
+      updateAt
+      lastEditorID
+      companyID
+      deviceID
+      transporterID
+      busOwner
+      createdAt
+      updatedAt
+      _version
+      _deleted
+      _lastChangedAt
+      __typename
+    }
+    routeOwner
+    _version
+    _deleted
+    _lastChangedAt
+    __typename
+  }
+}
+
+mutation DeleteRoute(
+  $input: DeleteRouteInput!
+  $condition: ModelRouteConditionInput
+) {
+  deleteRoute(input: $input, condition: $condition) {
+    id
+    routeName
+    fare
+    status
+    createdAt
+    updatedAt
+    busID
+    bus {
+      id
+      plate
+      description
+      state
+      createAt
+      updateAt
+      lastEditorID
+      companyID
+      deviceID
+      transporterID
+      busOwner
+      createdAt
+      updatedAt
+      _version
+      _deleted
+      _lastChangedAt
+      __typename
+    }
+    routeOwner
+    _version
+    _deleted
+    _lastChangedAt
+    __typename
+  }
+}
+
+mutation CreateBus(
+  $input: CreateBusInput!
+  $condition: ModelBusConditionInput
+) {
+  createBus(input: $input, condition: $condition) {
+    id
+    plate
+    description
+    state
+    createAt
+    updateAt
+    lastEditorID
+    companyID
+    company {
+      id
+      name
+      rutaCivica
+      commissionPerTicket
+      lastEditorID
+      companyOwner
+      createdAt
+      updatedAt
+      _version
+      _deleted
+      _lastChangedAt
+      __typename
+    }
+    deviceID
+    device {
+      id
+      imei
+      civicaSerial
+      createAt
+      updateAt
+      lastEditorID
+      companyID
+      deviceOwner
+      createdAt
+      updatedAt
+      _version
+      _deleted
+      _lastChangedAt
+      __typename
+    }
+    transporterID
+    transporter {
+      id
+      name
+      contactInfo
+      transporterOwner
+      createdAt
+      updatedAt
+      _version
+      _deleted
+      _lastChangedAt
+      __typename
+    }
+    busOwner
+    routes {
+      nextToken
+      startedAt
+      __typename
+    }
+    createdAt
+    updatedAt
+    _version
+    _deleted
+    _lastChangedAt
+    __typename
+  }
+}
+
+mutation UpdateBus(
+  $input: UpdateBusInput!
+  $condition: ModelBusConditionInput
+) {
+  updateBus(input: $input, condition: $condition) {
+    id
+    plate
+    description
+    state
+    createAt
+    updateAt
+    lastEditorID
+    companyID
+    company {
+      id
+      name
+      rutaCivica
+      commissionPerTicket
+      lastEditorID
+      companyOwner
+      createdAt
+      updatedAt
+      _version
+      _deleted
+      _lastChangedAt
+      __typename
+    }
+    deviceID
+    device {
+      id
+      imei
+      civicaSerial
+      createAt
+      updateAt
+      lastEditorID
+      companyID
+      deviceOwner
+      createdAt
+      updatedAt
+      _version
+      _deleted
+      _lastChangedAt
+      __typename
+    }
+    transporterID
+    transporter {
+      id
+      name
+      contactInfo
+      transporterOwner
+      createdAt
+      updatedAt
+      _version
+      _deleted
+      _lastChangedAt
+      __typename
+    }
+    busOwner
+    routes {
+      nextToken
+      startedAt
+      __typename
+    }
+    createdAt
+    updatedAt
+    _version
+    _deleted
+    _lastChangedAt
+    __typename
+  }
+}
+
+mutation DeleteBus(
+  $input: DeleteBusInput!
+  $condition: ModelBusConditionInput
+) {
+  deleteBus(input: $input, condition: $condition) {
+    id
+    plate
+    description
+    state
+    createAt
+    updateAt
+    lastEditorID
+    companyID
+    company {
+      id
+      name
+      rutaCivica
+      commissionPerTicket
+      lastEditorID
+      companyOwner
+      createdAt
+      updatedAt
+      _version
+      _deleted
+      _lastChangedAt
+      __typename
+    }
+    deviceID
+    device {
+      id
+      imei
+      civicaSerial
+      createAt
+      updateAt
+      lastEditorID
+      companyID
+      deviceOwner
+      createdAt
+      updatedAt
+      _version
+      _deleted
+      _lastChangedAt
+      __typename
+    }
+    transporterID
+    transporter {
+      id
+      name
+      contactInfo
+      transporterOwner
+      createdAt
+      updatedAt
+      _version
+      _deleted
+      _lastChangedAt
+      __typename
+    }
+    busOwner
+    routes {
+      nextToken
+      startedAt
+      __typename
+    }
+    createdAt
+    updatedAt
+    _version
+    _deleted
+    _lastChangedAt
+    __typename
+  }
+}
+
+mutation CreateCompany(
+  $input: CreateCompanyInput!
+  $condition: ModelCompanyConditionInput
+) {
+  createCompany(input: $input, condition: $condition) {
+    id
+    name
+    rutaCivica
+    commissionPerTicket
+    lastEditorID
+    companyOwner
+    buses {
+      nextToken
+      startedAt
+      __typename
+    }
+    devices {
+      nextToken
+      startedAt
+      __typename
+    }
+    createdAt
+    updatedAt
+    _version
+    _deleted
+    _lastChangedAt
+    __typename
+  }
+}
+
+mutation UpdateCompany(
+  $input: UpdateCompanyInput!
+  $condition: ModelCompanyConditionInput
+) {
+  updateCompany(input: $input, condition: $condition) {
+    id
+    name
+    rutaCivica
+    commissionPerTicket
+    lastEditorID
+    companyOwner
+    buses {
+      nextToken
+      startedAt
+      __typename
+    }
+    devices {
+      nextToken
+      startedAt
+      __typename
+    }
+    createdAt
+    updatedAt
+    _version
+    _deleted
+    _lastChangedAt
+    __typename
+  }
+}
+
+mutation DeleteCompany(
+  $input: DeleteCompanyInput!
+  $condition: ModelCompanyConditionInput
+) {
+  deleteCompany(input: $input, condition: $condition) {
+    id
+    name
+    rutaCivica
+    commissionPerTicket
+    lastEditorID
+    companyOwner
+    buses {
+      nextToken
+      startedAt
+      __typename
+    }
+    devices {
+      nextToken
+      startedAt
+      __typename
+    }
+    createdAt
+    updatedAt
+    _version
+    _deleted
+    _lastChangedAt
+    __typename
+  }
+}
+
+mutation CreateTransporter(
+  $input: CreateTransporterInput!
+  $condition: ModelTransporterConditionInput
+) {
+  createTransporter(input: $input, condition: $condition) {
+    id
+    name
+    contactInfo
+    buses {
+      nextToken
+      startedAt
+      __typename
+    }
+    transporterOwner
+    createdAt
+    updatedAt
+    _version
+    _deleted
+    _lastChangedAt
+    __typename
+  }
+}
+
+mutation UpdateTransporter(
+  $input: UpdateTransporterInput!
+  $condition: ModelTransporterConditionInput
+) {
+  updateTransporter(input: $input, condition: $condition) {
+    id
+    name
+    contactInfo
+    buses {
+      nextToken
+      startedAt
+      __typename
+    }
+    transporterOwner
+    createdAt
+    updatedAt
+    _version
+    _deleted
+    _lastChangedAt
+    __typename
+  }
+}
+
+mutation DeleteTransporter(
+  $input: DeleteTransporterInput!
+  $condition: ModelTransporterConditionInput
+) {
+  deleteTransporter(input: $input, condition: $condition) {
+    id
+    name
+    contactInfo
+    buses {
+      nextToken
+      startedAt
+      __typename
+    }
+    transporterOwner
+    createdAt
+    updatedAt
+    _version
+    _deleted
+    _lastChangedAt
+    __typename
+  }
+}
+
+mutation CreateDevice(
+  $input: CreateDeviceInput!
+  $condition: ModelDeviceConditionInput
+) {
+  createDevice(input: $input, condition: $condition) {
+    id
+    imei
+    civicaSerial
+    createAt
+    updateAt
+    lastEditorID
+    companyID
+    company {
+      id
+      name
+      rutaCivica
+      commissionPerTicket
+      lastEditorID
+      companyOwner
+      createdAt
+      updatedAt
+      _version
+      _deleted
+      _lastChangedAt
+      __typename
+    }
+    buses {
+      nextToken
+      startedAt
+      __typename
+    }
+    deviceOwner
+    createdAt
+    updatedAt
+    _version
+    _deleted
+    _lastChangedAt
+    __typename
+  }
+}
+
+mutation UpdateDevice(
+  $input: UpdateDeviceInput!
+  $condition: ModelDeviceConditionInput
+) {
+  updateDevice(input: $input, condition: $condition) {
+    id
+    imei
+    civicaSerial
+    createAt
+    updateAt
+    lastEditorID
+    companyID
+    company {
+      id
+      name
+      rutaCivica
+      commissionPerTicket
+      lastEditorID
+      companyOwner
+      createdAt
+      updatedAt
+      _version
+      _deleted
+      _lastChangedAt
+      __typename
+    }
+    buses {
+      nextToken
+      startedAt
+      __typename
+    }
+    deviceOwner
+    createdAt
+    updatedAt
+    _version
+    _deleted
+    _lastChangedAt
+    __typename
+  }
+}
+
+mutation DeleteDevice(
+  $input: DeleteDeviceInput!
+  $condition: ModelDeviceConditionInput
+) {
+  deleteDevice(input: $input, condition: $condition) {
+    id
+    imei
+    civicaSerial
+    createAt
+    updateAt
+    lastEditorID
+    companyID
+    company {
+      id
+      name
+      rutaCivica
+      commissionPerTicket
+      lastEditorID
+      companyOwner
+      createdAt
+      updatedAt
+      _version
+      _deleted
+      _lastChangedAt
+      __typename
+    }
+    buses {
+      nextToken
+      startedAt
+      __typename
+    }
+    deviceOwner
+    createdAt
+    updatedAt
+    _version
+    _deleted
+    _lastChangedAt
+    __typename
+  }
+}

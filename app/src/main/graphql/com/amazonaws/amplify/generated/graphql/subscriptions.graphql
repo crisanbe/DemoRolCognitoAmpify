@@ -1,0 +1,799 @@
+# this is an auto generated file. This will be overwritten
+
+subscription OnCreateUso(
+  $filter: ModelSubscriptionUsoFilterInput
+  $usoOwner: String
+) {
+  onCreateUso(filter: $filter, usoOwner: $usoOwner) {
+    id
+    cardNumber
+    balance
+    sequenceNumber
+    status
+    createdAt
+    updatedAt
+    usoOwner
+    isVerified
+    tickets {
+      nextToken
+      startedAt
+      __typename
+    }
+    _version
+    _deleted
+    _lastChangedAt
+    __typename
+  }
+}
+
+subscription OnUpdateUso(
+  $filter: ModelSubscriptionUsoFilterInput
+  $usoOwner: String
+) {
+  onUpdateUso(filter: $filter, usoOwner: $usoOwner) {
+    id
+    cardNumber
+    balance
+    sequenceNumber
+    status
+    createdAt
+    updatedAt
+    usoOwner
+    isVerified
+    tickets {
+      nextToken
+      startedAt
+      __typename
+    }
+    _version
+    _deleted
+    _lastChangedAt
+    __typename
+  }
+}
+
+subscription OnDeleteUso(
+  $filter: ModelSubscriptionUsoFilterInput
+  $usoOwner: String
+) {
+  onDeleteUso(filter: $filter, usoOwner: $usoOwner) {
+    id
+    cardNumber
+    balance
+    sequenceNumber
+    status
+    createdAt
+    updatedAt
+    usoOwner
+    isVerified
+    tickets {
+      nextToken
+      startedAt
+      __typename
+    }
+    _version
+    _deleted
+    _lastChangedAt
+    __typename
+  }
+}
+
+subscription OnCreateTicket(
+  $filter: ModelSubscriptionTicketFilterInput
+  $ticketOwner: String
+) {
+  onCreateTicket(filter: $filter, ticketOwner: $ticketOwner) {
+    id
+    ticketNumber
+    issueDate
+    isValid
+    usoID
+    uso {
+      id
+      cardNumber
+      balance
+      sequenceNumber
+      status
+      createdAt
+      updatedAt
+      usoOwner
+      isVerified
+      _version
+      _deleted
+      _lastChangedAt
+      __typename
+    }
+    ticketOwner
+    createdAt
+    updatedAt
+    _version
+    _deleted
+    _lastChangedAt
+    __typename
+  }
+}
+
+subscription OnUpdateTicket(
+  $filter: ModelSubscriptionTicketFilterInput
+  $ticketOwner: String
+) {
+  onUpdateTicket(filter: $filter, ticketOwner: $ticketOwner) {
+    id
+    ticketNumber
+    issueDate
+    isValid
+    usoID
+    uso {
+      id
+      cardNumber
+      balance
+      sequenceNumber
+      status
+      createdAt
+      updatedAt
+      usoOwner
+      isVerified
+      _version
+      _deleted
+      _lastChangedAt
+      __typename
+    }
+    ticketOwner
+    createdAt
+    updatedAt
+    _version
+    _deleted
+    _lastChangedAt
+    __typename
+  }
+}
+
+subscription OnDeleteTicket(
+  $filter: ModelSubscriptionTicketFilterInput
+  $ticketOwner: String
+) {
+  onDeleteTicket(filter: $filter, ticketOwner: $ticketOwner) {
+    id
+    ticketNumber
+    issueDate
+    isValid
+    usoID
+    uso {
+      id
+      cardNumber
+      balance
+      sequenceNumber
+      status
+      createdAt
+      updatedAt
+      usoOwner
+      isVerified
+      _version
+      _deleted
+      _lastChangedAt
+      __typename
+    }
+    ticketOwner
+    createdAt
+    updatedAt
+    _version
+    _deleted
+    _lastChangedAt
+    __typename
+  }
+}
+
+subscription OnCreateRoute(
+  $filter: ModelSubscriptionRouteFilterInput
+  $routeOwner: String
+) {
+  onCreateRoute(filter: $filter, routeOwner: $routeOwner) {
+    id
+    routeName
+    fare
+    status
+    createdAt
+    updatedAt
+    busID
+    bus {
+      id
+      plate
+      description
+      state
+      createAt
+      updateAt
+      lastEditorID
+      companyID
+      deviceID
+      transporterID
+      busOwner
+      createdAt
+      updatedAt
+      _version
+      _deleted
+      _lastChangedAt
+      __typename
+    }
+    routeOwner
+    _version
+    _deleted
+    _lastChangedAt
+    __typename
+  }
+}
+
+subscription OnUpdateRoute(
+  $filter: ModelSubscriptionRouteFilterInput
+  $routeOwner: String
+) {
+  onUpdateRoute(filter: $filter, routeOwner: $routeOwner) {
+    id
+    routeName
+    fare
+    status
+    createdAt
+    updatedAt
+    busID
+    bus {
+      id
+      plate
+      description
+      state
+      createAt
+      updateAt
+      lastEditorID
+      companyID
+      deviceID
+      transporterID
+      busOwner
+      createdAt
+      updatedAt
+      _version
+      _deleted
+      _lastChangedAt
+      __typename
+    }
+    routeOwner
+    _version
+    _deleted
+    _lastChangedAt
+    __typename
+  }
+}
+
+subscription OnDeleteRoute(
+  $filter: ModelSubscriptionRouteFilterInput
+  $routeOwner: String
+) {
+  onDeleteRoute(filter: $filter, routeOwner: $routeOwner) {
+    id
+    routeName
+    fare
+    status
+    createdAt
+    updatedAt
+    busID
+    bus {
+      id
+      plate
+      description
+      state
+      createAt
+      updateAt
+      lastEditorID
+      companyID
+      deviceID
+      transporterID
+      busOwner
+      createdAt
+      updatedAt
+      _version
+      _deleted
+      _lastChangedAt
+      __typename
+    }
+    routeOwner
+    _version
+    _deleted
+    _lastChangedAt
+    __typename
+  }
+}
+
+subscription OnCreateBus(
+  $filter: ModelSubscriptionBusFilterInput
+  $busOwner: String
+) {
+  onCreateBus(filter: $filter, busOwner: $busOwner) {
+    id
+    plate
+    description
+    state
+    createAt
+    updateAt
+    lastEditorID
+    companyID
+    company {
+      id
+      name
+      rutaCivica
+      commissionPerTicket
+      lastEditorID
+      companyOwner
+      createdAt
+      updatedAt
+      _version
+      _deleted
+      _lastChangedAt
+      __typename
+    }
+    deviceID
+    device {
+      id
+      imei
+      civicaSerial
+      createAt
+      updateAt
+      lastEditorID
+      companyID
+      deviceOwner
+      createdAt
+      updatedAt
+      _version
+      _deleted
+      _lastChangedAt
+      __typename
+    }
+    transporterID
+    transporter {
+      id
+      name
+      contactInfo
+      transporterOwner
+      createdAt
+      updatedAt
+      _version
+      _deleted
+      _lastChangedAt
+      __typename
+    }
+    busOwner
+    routes {
+      nextToken
+      startedAt
+      __typename
+    }
+    createdAt
+    updatedAt
+    _version
+    _deleted
+    _lastChangedAt
+    __typename
+  }
+}
+
+subscription OnUpdateBus(
+  $filter: ModelSubscriptionBusFilterInput
+  $busOwner: String
+) {
+  onUpdateBus(filter: $filter, busOwner: $busOwner) {
+    id
+    plate
+    description
+    state
+    createAt
+    updateAt
+    lastEditorID
+    companyID
+    company {
+      id
+      name
+      rutaCivica
+      commissionPerTicket
+      lastEditorID
+      companyOwner
+      createdAt
+      updatedAt
+      _version
+      _deleted
+      _lastChangedAt
+      __typename
+    }
+    deviceID
+    device {
+      id
+      imei
+      civicaSerial
+      createAt
+      updateAt
+      lastEditorID
+      companyID
+      deviceOwner
+      createdAt
+      updatedAt
+      _version
+      _deleted
+      _lastChangedAt
+      __typename
+    }
+    transporterID
+    transporter {
+      id
+      name
+      contactInfo
+      transporterOwner
+      createdAt
+      updatedAt
+      _version
+      _deleted
+      _lastChangedAt
+      __typename
+    }
+    busOwner
+    routes {
+      nextToken
+      startedAt
+      __typename
+    }
+    createdAt
+    updatedAt
+    _version
+    _deleted
+    _lastChangedAt
+    __typename
+  }
+}
+
+subscription OnDeleteBus(
+  $filter: ModelSubscriptionBusFilterInput
+  $busOwner: String
+) {
+  onDeleteBus(filter: $filter, busOwner: $busOwner) {
+    id
+    plate
+    description
+    state
+    createAt
+    updateAt
+    lastEditorID
+    companyID
+    company {
+      id
+      name
+      rutaCivica
+      commissionPerTicket
+      lastEditorID
+      companyOwner
+      createdAt
+      updatedAt
+      _version
+      _deleted
+      _lastChangedAt
+      __typename
+    }
+    deviceID
+    device {
+      id
+      imei
+      civicaSerial
+      createAt
+      updateAt
+      lastEditorID
+      companyID
+      deviceOwner
+      createdAt
+      updatedAt
+      _version
+      _deleted
+      _lastChangedAt
+      __typename
+    }
+    transporterID
+    transporter {
+      id
+      name
+      contactInfo
+      transporterOwner
+      createdAt
+      updatedAt
+      _version
+      _deleted
+      _lastChangedAt
+      __typename
+    }
+    busOwner
+    routes {
+      nextToken
+      startedAt
+      __typename
+    }
+    createdAt
+    updatedAt
+    _version
+    _deleted
+    _lastChangedAt
+    __typename
+  }
+}
+
+subscription OnCreateCompany(
+  $filter: ModelSubscriptionCompanyFilterInput
+  $companyOwner: String
+) {
+  onCreateCompany(filter: $filter, companyOwner: $companyOwner) {
+    id
+    name
+    rutaCivica
+    commissionPerTicket
+    lastEditorID
+    companyOwner
+    buses {
+      nextToken
+      startedAt
+      __typename
+    }
+    devices {
+      nextToken
+      startedAt
+      __typename
+    }
+    createdAt
+    updatedAt
+    _version
+    _deleted
+    _lastChangedAt
+    __typename
+  }
+}
+
+subscription OnUpdateCompany(
+  $filter: ModelSubscriptionCompanyFilterInput
+  $companyOwner: String
+) {
+  onUpdateCompany(filter: $filter, companyOwner: $companyOwner) {
+    id
+    name
+    rutaCivica
+    commissionPerTicket
+    lastEditorID
+    companyOwner
+    buses {
+      nextToken
+      startedAt
+      __typename
+    }
+    devices {
+      nextToken
+      startedAt
+      __typename
+    }
+    createdAt
+    updatedAt
+    _version
+    _deleted
+    _lastChangedAt
+    __typename
+  }
+}
+
+subscription OnDeleteCompany(
+  $filter: ModelSubscriptionCompanyFilterInput
+  $companyOwner: String
+) {
+  onDeleteCompany(filter: $filter, companyOwner: $companyOwner) {
+    id
+    name
+    rutaCivica
+    commissionPerTicket
+    lastEditorID
+    companyOwner
+    buses {
+      nextToken
+      startedAt
+      __typename
+    }
+    devices {
+      nextToken
+      startedAt
+      __typename
+    }
+    createdAt
+    updatedAt
+    _version
+    _deleted
+    _lastChangedAt
+    __typename
+  }
+}
+
+subscription OnCreateTransporter(
+  $filter: ModelSubscriptionTransporterFilterInput
+  $transporterOwner: String
+) {
+  onCreateTransporter(filter: $filter, transporterOwner: $transporterOwner) {
+    id
+    name
+    contactInfo
+    buses {
+      nextToken
+      startedAt
+      __typename
+    }
+    transporterOwner
+    createdAt
+    updatedAt
+    _version
+    _deleted
+    _lastChangedAt
+    __typename
+  }
+}
+
+subscription OnUpdateTransporter(
+  $filter: ModelSubscriptionTransporterFilterInput
+  $transporterOwner: String
+) {
+  onUpdateTransporter(filter: $filter, transporterOwner: $transporterOwner) {
+    id
+    name
+    contactInfo
+    buses {
+      nextToken
+      startedAt
+      __typename
+    }
+    transporterOwner
+    createdAt
+    updatedAt
+    _version
+    _deleted
+    _lastChangedAt
+    __typename
+  }
+}
+
+subscription OnDeleteTransporter(
+  $filter: ModelSubscriptionTransporterFilterInput
+  $transporterOwner: String
+) {
+  onDeleteTransporter(filter: $filter, transporterOwner: $transporterOwner) {
+    id
+    name
+    contactInfo
+    buses {
+      nextToken
+      startedAt
+      __typename
+    }
+    transporterOwner
+    createdAt
+    updatedAt
+    _version
+    _deleted
+    _lastChangedAt
+    __typename
+  }
+}
+
+subscription OnCreateDevice(
+  $filter: ModelSubscriptionDeviceFilterInput
+  $deviceOwner: String
+) {
+  onCreateDevice(filter: $filter, deviceOwner: $deviceOwner) {
+    id
+    imei
+    civicaSerial
+    createAt
+    updateAt
+    lastEditorID
+    companyID
+    company {
+      id
+      name
+      rutaCivica
+      commissionPerTicket
+      lastEditorID
+      companyOwner
+      createdAt
+      updatedAt
+      _version
+      _deleted
+      _lastChangedAt
+      __typename
+    }
+    buses {
+      nextToken
+      startedAt
+      __typename
+    }
+    deviceOwner
+    createdAt
+    updatedAt
+    _version
+    _deleted
+    _lastChangedAt
+    __typename
+  }
+}
+
+subscription OnUpdateDevice(
+  $filter: ModelSubscriptionDeviceFilterInput
+  $deviceOwner: String
+) {
+  onUpdateDevice(filter: $filter, deviceOwner: $deviceOwner) {
+    id
+    imei
+    civicaSerial
+    createAt
+    updateAt
+    lastEditorID
+    companyID
+    company {
+      id
+      name
+      rutaCivica
+      commissionPerTicket
+      lastEditorID
+      companyOwner
+      createdAt
+      updatedAt
+      _version
+      _deleted
+      _lastChangedAt
+      __typename
+    }
+    buses {
+      nextToken
+      startedAt
+      __typename
+    }
+    deviceOwner
+    createdAt
+    updatedAt
+    _version
+    _deleted
+    _lastChangedAt
+    __typename
+  }
+}
+
+subscription OnDeleteDevice(
+  $filter: ModelSubscriptionDeviceFilterInput
+  $deviceOwner: String
+) {
+  onDeleteDevice(filter: $filter, deviceOwner: $deviceOwner) {
+    id
+    imei
+    civicaSerial
+    createAt
+    updateAt
+    lastEditorID
+    companyID
+    company {
+      id
+      name
+      rutaCivica
+      commissionPerTicket
+      lastEditorID
+      companyOwner
+      createdAt
+      updatedAt
+      _version
+      _deleted
+      _lastChangedAt
+      __typename
+    }
+    buses {
+      nextToken
+      startedAt
+      __typename
+    }
+    deviceOwner
+    createdAt
+    updatedAt
+    _version
+    _deleted
+    _lastChangedAt
+    __typename
+  }
+}

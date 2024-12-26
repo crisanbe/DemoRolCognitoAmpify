@@ -1,0 +1,75 @@
+{
+  "api": {
+    "DemoCognitoAmplify": {
+      "dependsOn": [
+        {
+          "attributes": [
+            "UserPoolId"
+          ],
+          "category": "auth",
+          "resourceName": "democognitoamplify"
+        }
+      ],
+      "output": {
+        "authConfig": {
+          "additionalAuthenticationProviders": [
+            {
+              "authenticationType": "AWS_IAM"
+            }
+          ],
+          "defaultAuthentication": {
+            "authenticationType": "AMAZON_COGNITO_USER_POOLS",
+            "userPoolConfig": {
+              "userPoolId": "authdemocognitoamplify"
+            }
+          }
+        }
+      },
+      "providerPlugin": "awscloudformation",
+      "service": "AppSync"
+    }
+  },
+  "auth": {
+    "democognitoamplify": {
+      "customAuth": false,
+      "dependsOn": [],
+      "providerPlugin": "awscloudformation",
+      "service": "Cognito",
+      "serviceType": "imported"
+    }
+  },
+  "parameters": {
+    "AMPLIFY_auth_democognitoamplify_nativeClientId": {
+      "usedBy": [
+        {
+          "category": "auth",
+          "resourceName": "democognitoamplify"
+        }
+      ]
+    },
+    "AMPLIFY_auth_democognitoamplify_userPoolId": {
+      "usedBy": [
+        {
+          "category": "auth",
+          "resourceName": "democognitoamplify"
+        }
+      ]
+    },
+    "AMPLIFY_auth_democognitoamplify_userPoolName": {
+      "usedBy": [
+        {
+          "category": "auth",
+          "resourceName": "democognitoamplify"
+        }
+      ]
+    },
+    "AMPLIFY_auth_democognitoamplify_webClientId": {
+      "usedBy": [
+        {
+          "category": "auth",
+          "resourceName": "democognitoamplify"
+        }
+      ]
+    }
+  }
+}
