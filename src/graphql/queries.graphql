@@ -8,6 +8,7 @@ query GetUse($id: ID!) {
     sequenceNumber
     status
     deviceID
+    deviceOwner
     device {
       id
       imei
@@ -53,6 +54,7 @@ query ListUses(
       sequenceNumber
       status
       deviceID
+      deviceOwner
       createdAt
       updatedAt
       _version
@@ -85,6 +87,7 @@ query SyncUses(
       sequenceNumber
       status
       deviceID
+      deviceOwner
       createdAt
       updatedAt
       _version
@@ -119,6 +122,7 @@ query UsesByDeviceID(
       sequenceNumber
       status
       deviceID
+      deviceOwner
       createdAt
       updatedAt
       _version
@@ -158,6 +162,7 @@ query GetDevice($id: ID!) {
       plate
       status
       companyID
+      busOwner
       createdAt
       updatedAt
       _version
@@ -171,6 +176,7 @@ query GetDevice($id: ID!) {
       name
       description
       companyID
+      routeOwner
       createdAt
       updatedAt
       _version
@@ -401,6 +407,143 @@ query DevicesByRouteID(
   }
 }
 
+query GetRoute($id: ID!) {
+  getRoute(id: $id) {
+    id
+    name
+    description
+    companyID
+    company {
+      id
+      username
+      name
+      rutaCivica
+      commissionPerTicket
+      createdAt
+      updatedAt
+      _version
+      _deleted
+      _lastChangedAt
+      __typename
+    }
+    devices {
+      nextToken
+      startedAt
+      __typename
+    }
+    points {
+      lat
+      lng
+      name
+      __typename
+    }
+    routeOwner
+    createdAt
+    updatedAt
+    _version
+    _deleted
+    _lastChangedAt
+    __typename
+  }
+}
+
+query ListRoutes(
+  $id: ID
+  $filter: ModelRouteFilterInput
+  $limit: Int
+  $nextToken: String
+  $sortDirection: ModelSortDirection
+) {
+  listRoutes(
+    id: $id
+    filter: $filter
+    limit: $limit
+    nextToken: $nextToken
+    sortDirection: $sortDirection
+  ) {
+    items {
+      id
+      name
+      description
+      companyID
+      routeOwner
+      createdAt
+      updatedAt
+      _version
+      _deleted
+      _lastChangedAt
+      __typename
+    }
+    nextToken
+    startedAt
+    __typename
+  }
+}
+
+query SyncRoutes(
+  $filter: ModelRouteFilterInput
+  $limit: Int
+  $nextToken: String
+  $lastSync: AWSTimestamp
+) {
+  syncRoutes(
+    filter: $filter
+    limit: $limit
+    nextToken: $nextToken
+    lastSync: $lastSync
+  ) {
+    items {
+      id
+      name
+      description
+      companyID
+      routeOwner
+      createdAt
+      updatedAt
+      _version
+      _deleted
+      _lastChangedAt
+      __typename
+    }
+    nextToken
+    startedAt
+    __typename
+  }
+}
+
+query RoutesByCompanyID(
+  $companyID: ID!
+  $sortDirection: ModelSortDirection
+  $filter: ModelRouteFilterInput
+  $limit: Int
+  $nextToken: String
+) {
+  routesByCompanyID(
+    companyID: $companyID
+    sortDirection: $sortDirection
+    filter: $filter
+    limit: $limit
+    nextToken: $nextToken
+  ) {
+    items {
+      id
+      name
+      description
+      companyID
+      routeOwner
+      createdAt
+      updatedAt
+      _version
+      _deleted
+      _lastChangedAt
+      __typename
+    }
+    nextToken
+    startedAt
+    __typename
+  }
+}
+
 query GetCompany($id: ID!) {
   getCompany(id: $id) {
     id
@@ -563,6 +706,7 @@ query GetBus($id: ID!) {
       _lastChangedAt
       __typename
     }
+    busOwner
     createdAt
     updatedAt
     _version
@@ -592,6 +736,7 @@ query ListBuses(
       plate
       status
       companyID
+      busOwner
       createdAt
       updatedAt
       _version
@@ -623,6 +768,7 @@ query SyncBuses(
       plate
       status
       companyID
+      busOwner
       createdAt
       updatedAt
       _version
@@ -656,6 +802,7 @@ query BusesByPlate(
       plate
       status
       companyID
+      busOwner
       createdAt
       updatedAt
       _version
@@ -689,145 +836,13 @@ query BusesByCompanyID(
       plate
       status
       companyID
+      busOwner
       createdAt
       updatedAt
       _version
       _deleted
       _lastChangedAt
       busDeviceId
-      __typename
-    }
-    nextToken
-    startedAt
-    __typename
-  }
-}
-
-query GetRoute($id: ID!) {
-  getRoute(id: $id) {
-    id
-    name
-    description
-    companyID
-    company {
-      id
-      username
-      name
-      rutaCivica
-      commissionPerTicket
-      createdAt
-      updatedAt
-      _version
-      _deleted
-      _lastChangedAt
-      __typename
-    }
-    devices {
-      nextToken
-      startedAt
-      __typename
-    }
-    points {
-      lat
-      lng
-      name
-      __typename
-    }
-    createdAt
-    updatedAt
-    _version
-    _deleted
-    _lastChangedAt
-    __typename
-  }
-}
-
-query ListRoutes(
-  $id: ID
-  $filter: ModelRouteFilterInput
-  $limit: Int
-  $nextToken: String
-  $sortDirection: ModelSortDirection
-) {
-  listRoutes(
-    id: $id
-    filter: $filter
-    limit: $limit
-    nextToken: $nextToken
-    sortDirection: $sortDirection
-  ) {
-    items {
-      id
-      name
-      description
-      companyID
-      createdAt
-      updatedAt
-      _version
-      _deleted
-      _lastChangedAt
-      __typename
-    }
-    nextToken
-    startedAt
-    __typename
-  }
-}
-
-query SyncRoutes(
-  $filter: ModelRouteFilterInput
-  $limit: Int
-  $nextToken: String
-  $lastSync: AWSTimestamp
-) {
-  syncRoutes(
-    filter: $filter
-    limit: $limit
-    nextToken: $nextToken
-    lastSync: $lastSync
-  ) {
-    items {
-      id
-      name
-      description
-      companyID
-      createdAt
-      updatedAt
-      _version
-      _deleted
-      _lastChangedAt
-      __typename
-    }
-    nextToken
-    startedAt
-    __typename
-  }
-}
-
-query RoutesByCompanyID(
-  $companyID: ID!
-  $sortDirection: ModelSortDirection
-  $filter: ModelRouteFilterInput
-  $limit: Int
-  $nextToken: String
-) {
-  routesByCompanyID(
-    companyID: $companyID
-    sortDirection: $sortDirection
-    filter: $filter
-    limit: $limit
-    nextToken: $nextToken
-  ) {
-    items {
-      id
-      name
-      description
-      companyID
-      createdAt
-      updatedAt
-      _version
-      _deleted
-      _lastChangedAt
       __typename
     }
     nextToken

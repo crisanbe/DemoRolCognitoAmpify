@@ -184,6 +184,40 @@ fun AppBar(
         )
     }
 }
-fun queryCompany(username: String, onResult: (String) -> Unit) {
 
+fun queryCompany(imei: String, onResult: (String) -> Unit) {
+    // Primero buscar el Device por IMEI
+    val deviceQuery = QueryField.field("imei").eq(imei)
+    Amplify.DataStore.query(
+        Device::class.java,
+        deviceQuery,
+        { devices ->
+            if (devices.hasNext()) {
+                val device = devices.next()
+                // Obtener la empresa asociada al device
+                Amplify.DataStore.query(
+                    Company::class.java,
+                    QueryField.field("id").eq(device.company.id),
+                    { companies ->
+                        if (companies.hasNext()) {
+                            val company = companies.next()
+                            onResult(company.name)
+                        } else {
+                            onResult("Empresa no encontrada")
+                        }
+                    },
+                    { error ->
+                        Log.e("AppBar", "Error consultando empresa", error)
+                        onResult("Error")
+                    }
+                )
+            } else {
+                onResult("Dispositivo no encontrado")
+            }
+        },
+        { error ->
+            Log.e("AppBar", "Error consultando dispositivo", error)
+            onResult("Error")
+        }
+    )
 }

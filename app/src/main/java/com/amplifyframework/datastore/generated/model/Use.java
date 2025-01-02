@@ -24,10 +24,9 @@ import static com.amplifyframework.core.model.query.predicate.QueryField.field;
 /** This is an auto generated class representing the Use type in your schema. */
 @SuppressWarnings("all")
 @ModelConfig(pluralName = "Uses", type = Model.Type.USER, version = 1, authRules = {
-  @AuthRule(allow = AuthStrategy.PRIVATE, operations = { ModelOperation.CREATE, ModelOperation.READ, ModelOperation.UPDATE, ModelOperation.DELETE }),
-  @AuthRule(allow = AuthStrategy.GROUPS, groupClaim = "cognito:groups", groups = { "admin" }, provider = "userPools", operations = { ModelOperation.CREATE, ModelOperation.READ, ModelOperation.UPDATE, ModelOperation.DELETE }),
-  @AuthRule(allow = AuthStrategy.GROUPS, groupClaim = "cognito:groups", groups = { "empresa" }, provider = "userPools", operations = { ModelOperation.READ }),
-  @AuthRule(allow = AuthStrategy.GROUPS, groupClaim = "cognito:groups", groups = { "dispositivo" }, provider = "userPools", operations = { ModelOperation.CREATE, ModelOperation.READ, ModelOperation.UPDATE })
+  @AuthRule(allow = AuthStrategy.OWNER, ownerField = "deviceOwner", identityClaim = "cognito:username", provider = "userPools", operations = { ModelOperation.CREATE, ModelOperation.READ, ModelOperation.UPDATE }),
+  @AuthRule(allow = AuthStrategy.GROUPS, groupClaim = "cognito:groups", groups = { "Administrador" }, provider = "userPools", operations = { ModelOperation.CREATE, ModelOperation.READ, ModelOperation.UPDATE, ModelOperation.DELETE }),
+  @AuthRule(allow = AuthStrategy.GROUPS, groupClaim = "cognito:groups", groups = { "Empresa" }, provider = "userPools", operations = { ModelOperation.READ, ModelOperation.UPDATE })
 })
 @Index(name = "undefined", fields = {"id"})
 @Index(name = "byDevice", fields = {"deviceID"})
@@ -37,12 +36,14 @@ public final class Use implements Model {
   public static final QueryField BALANCE = field("Use", "balance");
   public static final QueryField SEQUENCE_NUMBER = field("Use", "sequenceNumber");
   public static final QueryField STATUS = field("Use", "status");
+  public static final QueryField DEVICE_OWNER = field("Use", "deviceOwner");
   public static final QueryField DEVICE = field("Use", "deviceID");
   private final @ModelField(targetType="ID", isRequired = true) String id;
   private final @ModelField(targetType="String") String cardNumber;
   private final @ModelField(targetType="Float") Double balance;
   private final @ModelField(targetType="Int") Integer sequenceNumber;
   private final @ModelField(targetType="Boolean") Boolean status;
+  private final @ModelField(targetType="String") String deviceOwner;
   private final @ModelField(targetType="Device") @BelongsTo(targetName = "deviceID", targetNames = {"deviceID"}, type = Device.class) Device device;
   private @ModelField(targetType="AWSDateTime", isReadOnly = true) Temporal.DateTime createdAt;
   private @ModelField(targetType="AWSDateTime", isReadOnly = true) Temporal.DateTime updatedAt;
@@ -72,6 +73,10 @@ public final class Use implements Model {
       return status;
   }
   
+  public String getDeviceOwner() {
+      return deviceOwner;
+  }
+  
   public Device getDevice() {
       return device;
   }
@@ -84,12 +89,13 @@ public final class Use implements Model {
       return updatedAt;
   }
   
-  private Use(String id, String cardNumber, Double balance, Integer sequenceNumber, Boolean status, Device device) {
+  private Use(String id, String cardNumber, Double balance, Integer sequenceNumber, Boolean status, String deviceOwner, Device device) {
     this.id = id;
     this.cardNumber = cardNumber;
     this.balance = balance;
     this.sequenceNumber = sequenceNumber;
     this.status = status;
+    this.deviceOwner = deviceOwner;
     this.device = device;
   }
   
@@ -106,6 +112,7 @@ public final class Use implements Model {
               ObjectsCompat.equals(getBalance(), use.getBalance()) &&
               ObjectsCompat.equals(getSequenceNumber(), use.getSequenceNumber()) &&
               ObjectsCompat.equals(getStatus(), use.getStatus()) &&
+              ObjectsCompat.equals(getDeviceOwner(), use.getDeviceOwner()) &&
               ObjectsCompat.equals(getDevice(), use.getDevice()) &&
               ObjectsCompat.equals(getCreatedAt(), use.getCreatedAt()) &&
               ObjectsCompat.equals(getUpdatedAt(), use.getUpdatedAt());
@@ -120,6 +127,7 @@ public final class Use implements Model {
       .append(getBalance())
       .append(getSequenceNumber())
       .append(getStatus())
+      .append(getDeviceOwner())
       .append(getDevice())
       .append(getCreatedAt())
       .append(getUpdatedAt())
@@ -136,6 +144,7 @@ public final class Use implements Model {
       .append("balance=" + String.valueOf(getBalance()) + ", ")
       .append("sequenceNumber=" + String.valueOf(getSequenceNumber()) + ", ")
       .append("status=" + String.valueOf(getStatus()) + ", ")
+      .append("deviceOwner=" + String.valueOf(getDeviceOwner()) + ", ")
       .append("device=" + String.valueOf(getDevice()) + ", ")
       .append("createdAt=" + String.valueOf(getCreatedAt()) + ", ")
       .append("updatedAt=" + String.valueOf(getUpdatedAt()))
@@ -162,6 +171,7 @@ public final class Use implements Model {
       null,
       null,
       null,
+      null,
       null
     );
   }
@@ -172,6 +182,7 @@ public final class Use implements Model {
       balance,
       sequenceNumber,
       status,
+      deviceOwner,
       device);
   }
   public interface BuildStep {
@@ -181,6 +192,7 @@ public final class Use implements Model {
     BuildStep balance(Double balance);
     BuildStep sequenceNumber(Integer sequenceNumber);
     BuildStep status(Boolean status);
+    BuildStep deviceOwner(String deviceOwner);
     BuildStep device(Device device);
   }
   
@@ -191,17 +203,19 @@ public final class Use implements Model {
     private Double balance;
     private Integer sequenceNumber;
     private Boolean status;
+    private String deviceOwner;
     private Device device;
     public Builder() {
       
     }
     
-    private Builder(String id, String cardNumber, Double balance, Integer sequenceNumber, Boolean status, Device device) {
+    private Builder(String id, String cardNumber, Double balance, Integer sequenceNumber, Boolean status, String deviceOwner, Device device) {
       this.id = id;
       this.cardNumber = cardNumber;
       this.balance = balance;
       this.sequenceNumber = sequenceNumber;
       this.status = status;
+      this.deviceOwner = deviceOwner;
       this.device = device;
     }
     
@@ -215,6 +229,7 @@ public final class Use implements Model {
           balance,
           sequenceNumber,
           status,
+          deviceOwner,
           device);
     }
     
@@ -243,6 +258,12 @@ public final class Use implements Model {
     }
     
     @Override
+     public BuildStep deviceOwner(String deviceOwner) {
+        this.deviceOwner = deviceOwner;
+        return this;
+    }
+    
+    @Override
      public BuildStep device(Device device) {
         this.device = device;
         return this;
@@ -260,8 +281,8 @@ public final class Use implements Model {
   
 
   public final class CopyOfBuilder extends Builder {
-    private CopyOfBuilder(String id, String cardNumber, Double balance, Integer sequenceNumber, Boolean status, Device device) {
-      super(id, cardNumber, balance, sequenceNumber, status, device);
+    private CopyOfBuilder(String id, String cardNumber, Double balance, Integer sequenceNumber, Boolean status, String deviceOwner, Device device) {
+      super(id, cardNumber, balance, sequenceNumber, status, deviceOwner, device);
       
     }
     
@@ -283,6 +304,11 @@ public final class Use implements Model {
     @Override
      public CopyOfBuilder status(Boolean status) {
       return (CopyOfBuilder) super.status(status);
+    }
+    
+    @Override
+     public CopyOfBuilder deviceOwner(String deviceOwner) {
+      return (CopyOfBuilder) super.deviceOwner(deviceOwner);
     }
     
     @Override

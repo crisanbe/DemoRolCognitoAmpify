@@ -1,9 +1,8 @@
 type Use @model
 @auth(rules: [
-    { allow: private, operations: [create, read, update, delete] },
-    { allow: groups, groups: ["admin"], operations: [create, read, update, delete] },
-    { allow: groups, groups: ["empresa"], operations: [read] },
-    { allow: groups, groups: ["dispositivo"], operations: [create, read, update] }
+    { allow: owner, ownerField: "deviceOwner", operations: [create, read, update] },
+    { allow: groups, groups: ["Administrador"], operations: [create, read, update, delete] },
+    { allow: groups, groups: ["Empresa"], operations: [read, update] }
 ]) {
     id: ID! @primaryKey
     cardNumber: String
@@ -11,15 +10,15 @@ type Use @model
     sequenceNumber: Int
     status: Boolean
     deviceID: ID! @index(name: "byDevice")
+    deviceOwner: String
     device: Device @belongsTo(fields: ["deviceID"])
 }
 
 type Device @model
 @auth(rules: [
-    { allow: private, operations: [create, read, update, delete] },
-    { allow: groups, groups: ["admin"], operations: [create, read, update, delete] },
-    { allow: groups, groups: ["empresa"], operations: [read, update] },
-    { allow: groups, groups: ["dispositivo"], operations: [read] }
+    { allow: owner, ownerField: "imei", operations: [create, read, update] },
+    { allow: groups, groups: ["Administrador"], operations: [create, read, update, delete] },
+    { allow: groups, groups: ["Empresa"], operations: [read, update] }
 ]) {
     id: ID! @primaryKey
     imei: String! @index(name: "byImei")
@@ -34,11 +33,27 @@ type Device @model
     status: Boolean
 }
 
+type Route @model
+@auth(rules: [
+    { allow: groups, groups: ["Administrador"], operations: [create, read, update, delete] },
+    { allow: groups, groups: ["Empresa"], operations: [read, update] },
+    { allow: owner, ownerField: "routeOwner", operations: [read, update] }
+]) {
+    id: ID! @primaryKey
+    name: String!
+    description: String
+    companyID: ID! @index(name: "byCompany")
+    company: Company @belongsTo(fields: ["companyID"])
+    devices: [Device] @hasMany(indexName: "byRoute", fields: ["id"])
+    points: [Point]
+    routeOwner: String
+}
+
 type Company @model
 @auth(rules: [
-    { allow: private, operations: [create, read, update, delete] },
-    { allow: groups, groups: ["admin"], operations: [create, read, update, delete] },
-    { allow: groups, groups: ["empresa"], operations: [read, update] }
+    { allow: groups, groups: ["Administrador"], operations: [create, read, update, delete] },
+    { allow: groups, groups: ["Empresa"], operations: [read, update] },
+    { allow: groups, groups: ["Dispositivo"], operations: [read] }
 ]) {
     id: ID! @primaryKey
     username: String! @index
@@ -52,10 +67,9 @@ type Company @model
 
 type Bus @model
 @auth(rules: [
-    { allow: private, operations: [create, read, update, delete] },
-    { allow: groups, groups: ["admin"], operations: [create, read, update, delete] },
-    { allow: groups, groups: ["empresa"], operations: [read, update] },
-    { allow: groups, groups: ["dispositivo"], operations: [read] }
+    { allow: owner, ownerField: "busOwner", operations: [read, update] },
+    { allow: groups, groups: ["Administrador"], operations: [create, read, update, delete] },
+    { allow: groups, groups: ["Empresa"], operations: [read, update] }
 ]) {
     id: ID! @primaryKey
     plate: String! @index
@@ -63,22 +77,7 @@ type Bus @model
     companyID: ID! @index(name: "byCompany")
     company: Company @belongsTo(fields: ["companyID"])
     device: Device @hasOne
-}
-
-type Route @model
-@auth(rules: [
-    { allow: private, operations: [create, read, update, delete] },
-    { allow: groups, groups: ["admin"], operations: [create, read, update, delete] },
-    { allow: groups, groups: ["empresa"], operations: [read, update] },
-    { allow: groups, groups: ["dispositivo"], operations: [read] }
-]) {
-    id: ID! @primaryKey
-    name: String!
-    description: String
-    companyID: ID! @index(name: "byCompany")
-    company: Company @belongsTo(fields: ["companyID"])
-    devices: [Device] @hasMany(indexName: "byRoute", fields: ["id"])
-    points: [Point]
+    busOwner: String
 }
 
 type Point {

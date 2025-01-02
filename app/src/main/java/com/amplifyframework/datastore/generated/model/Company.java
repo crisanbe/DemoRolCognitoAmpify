@@ -24,9 +24,9 @@ import static com.amplifyframework.core.model.query.predicate.QueryField.field;
 /** This is an auto generated class representing the Company type in your schema. */
 @SuppressWarnings("all")
 @ModelConfig(pluralName = "Companies", type = Model.Type.USER, version = 1, authRules = {
-  @AuthRule(allow = AuthStrategy.PRIVATE, operations = { ModelOperation.CREATE, ModelOperation.READ, ModelOperation.UPDATE, ModelOperation.DELETE }),
-  @AuthRule(allow = AuthStrategy.GROUPS, groupClaim = "cognito:groups", groups = { "admin" }, provider = "userPools", operations = { ModelOperation.CREATE, ModelOperation.READ, ModelOperation.UPDATE, ModelOperation.DELETE }),
-  @AuthRule(allow = AuthStrategy.GROUPS, groupClaim = "cognito:groups", groups = { "empresa" }, provider = "userPools", operations = { ModelOperation.READ, ModelOperation.UPDATE })
+  @AuthRule(allow = AuthStrategy.GROUPS, groupClaim = "cognito:groups", groups = { "Administrador" }, provider = "userPools", operations = { ModelOperation.CREATE, ModelOperation.READ, ModelOperation.UPDATE, ModelOperation.DELETE }),
+  @AuthRule(allow = AuthStrategy.GROUPS, groupClaim = "cognito:groups", groups = { "Empresa" }, provider = "userPools", operations = { ModelOperation.READ, ModelOperation.UPDATE }),
+  @AuthRule(allow = AuthStrategy.GROUPS, groupClaim = "cognito:groups", groups = { "Dispositivo" }, provider = "userPools", operations = { ModelOperation.READ })
 })
 @Index(name = "undefined", fields = {"id"})
 @Index(name = "companiesByUsername", fields = {"username"})

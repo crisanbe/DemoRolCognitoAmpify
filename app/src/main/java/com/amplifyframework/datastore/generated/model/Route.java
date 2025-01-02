@@ -25,10 +25,9 @@ import static com.amplifyframework.core.model.query.predicate.QueryField.field;
 /** This is an auto generated class representing the Route type in your schema. */
 @SuppressWarnings("all")
 @ModelConfig(pluralName = "Routes", type = Model.Type.USER, version = 1, authRules = {
-  @AuthRule(allow = AuthStrategy.PRIVATE, operations = { ModelOperation.CREATE, ModelOperation.READ, ModelOperation.UPDATE, ModelOperation.DELETE }),
-  @AuthRule(allow = AuthStrategy.GROUPS, groupClaim = "cognito:groups", groups = { "admin" }, provider = "userPools", operations = { ModelOperation.CREATE, ModelOperation.READ, ModelOperation.UPDATE, ModelOperation.DELETE }),
-  @AuthRule(allow = AuthStrategy.GROUPS, groupClaim = "cognito:groups", groups = { "empresa" }, provider = "userPools", operations = { ModelOperation.READ, ModelOperation.UPDATE }),
-  @AuthRule(allow = AuthStrategy.GROUPS, groupClaim = "cognito:groups", groups = { "dispositivo" }, provider = "userPools", operations = { ModelOperation.READ })
+  @AuthRule(allow = AuthStrategy.GROUPS, groupClaim = "cognito:groups", groups = { "Administrador" }, provider = "userPools", operations = { ModelOperation.CREATE, ModelOperation.READ, ModelOperation.UPDATE, ModelOperation.DELETE }),
+  @AuthRule(allow = AuthStrategy.GROUPS, groupClaim = "cognito:groups", groups = { "Empresa" }, provider = "userPools", operations = { ModelOperation.READ, ModelOperation.UPDATE }),
+  @AuthRule(allow = AuthStrategy.OWNER, ownerField = "routeOwner", identityClaim = "cognito:username", provider = "userPools", operations = { ModelOperation.READ, ModelOperation.UPDATE })
 })
 @Index(name = "undefined", fields = {"id"})
 @Index(name = "byCompany", fields = {"companyID"})
@@ -38,12 +37,14 @@ public final class Route implements Model {
   public static final QueryField DESCRIPTION = field("Route", "description");
   public static final QueryField COMPANY = field("Route", "companyID");
   public static final QueryField POINTS = field("Route", "points");
+  public static final QueryField ROUTE_OWNER = field("Route", "routeOwner");
   private final @ModelField(targetType="ID", isRequired = true) String id;
   private final @ModelField(targetType="String", isRequired = true) String name;
   private final @ModelField(targetType="String") String description;
   private final @ModelField(targetType="Company") @BelongsTo(targetName = "companyID", targetNames = {"companyID"}, type = Company.class) Company company;
   private final @ModelField(targetType="Device") @HasMany(associatedWith = "route", type = Device.class) List<Device> devices = null;
   private final @ModelField(targetType="Point") List<Point> points;
+  private final @ModelField(targetType="String") String routeOwner;
   private @ModelField(targetType="AWSDateTime", isReadOnly = true) Temporal.DateTime createdAt;
   private @ModelField(targetType="AWSDateTime", isReadOnly = true) Temporal.DateTime updatedAt;
   /** @deprecated This API is internal to Amplify and should not be used. */
@@ -76,6 +77,10 @@ public final class Route implements Model {
       return points;
   }
   
+  public String getRouteOwner() {
+      return routeOwner;
+  }
+  
   public Temporal.DateTime getCreatedAt() {
       return createdAt;
   }
@@ -84,12 +89,13 @@ public final class Route implements Model {
       return updatedAt;
   }
   
-  private Route(String id, String name, String description, Company company, List<Point> points) {
+  private Route(String id, String name, String description, Company company, List<Point> points, String routeOwner) {
     this.id = id;
     this.name = name;
     this.description = description;
     this.company = company;
     this.points = points;
+    this.routeOwner = routeOwner;
   }
   
   @Override
@@ -105,6 +111,7 @@ public final class Route implements Model {
               ObjectsCompat.equals(getDescription(), route.getDescription()) &&
               ObjectsCompat.equals(getCompany(), route.getCompany()) &&
               ObjectsCompat.equals(getPoints(), route.getPoints()) &&
+              ObjectsCompat.equals(getRouteOwner(), route.getRouteOwner()) &&
               ObjectsCompat.equals(getCreatedAt(), route.getCreatedAt()) &&
               ObjectsCompat.equals(getUpdatedAt(), route.getUpdatedAt());
       }
@@ -118,6 +125,7 @@ public final class Route implements Model {
       .append(getDescription())
       .append(getCompany())
       .append(getPoints())
+      .append(getRouteOwner())
       .append(getCreatedAt())
       .append(getUpdatedAt())
       .toString()
@@ -133,6 +141,7 @@ public final class Route implements Model {
       .append("description=" + String.valueOf(getDescription()) + ", ")
       .append("company=" + String.valueOf(getCompany()) + ", ")
       .append("points=" + String.valueOf(getPoints()) + ", ")
+      .append("routeOwner=" + String.valueOf(getRouteOwner()) + ", ")
       .append("createdAt=" + String.valueOf(getCreatedAt()) + ", ")
       .append("updatedAt=" + String.valueOf(getUpdatedAt()))
       .append("}")
@@ -157,6 +166,7 @@ public final class Route implements Model {
       null,
       null,
       null,
+      null,
       null
     );
   }
@@ -166,7 +176,8 @@ public final class Route implements Model {
       name,
       description,
       company,
-      points);
+      points,
+      routeOwner);
   }
   public interface NameStep {
     BuildStep name(String name);
@@ -179,6 +190,7 @@ public final class Route implements Model {
     BuildStep description(String description);
     BuildStep company(Company company);
     BuildStep points(List<Point> points);
+    BuildStep routeOwner(String routeOwner);
   }
   
 
@@ -188,16 +200,18 @@ public final class Route implements Model {
     private String description;
     private Company company;
     private List<Point> points;
+    private String routeOwner;
     public Builder() {
       
     }
     
-    private Builder(String id, String name, String description, Company company, List<Point> points) {
+    private Builder(String id, String name, String description, Company company, List<Point> points, String routeOwner) {
       this.id = id;
       this.name = name;
       this.description = description;
       this.company = company;
       this.points = points;
+      this.routeOwner = routeOwner;
     }
     
     @Override
@@ -209,7 +223,8 @@ public final class Route implements Model {
           name,
           description,
           company,
-          points);
+          points,
+          routeOwner);
     }
     
     @Override
@@ -237,6 +252,12 @@ public final class Route implements Model {
         return this;
     }
     
+    @Override
+     public BuildStep routeOwner(String routeOwner) {
+        this.routeOwner = routeOwner;
+        return this;
+    }
+    
     /**
      * @param id id
      * @return Current Builder instance, for fluent method chaining
@@ -249,8 +270,8 @@ public final class Route implements Model {
   
 
   public final class CopyOfBuilder extends Builder {
-    private CopyOfBuilder(String id, String name, String description, Company company, List<Point> points) {
-      super(id, name, description, company, points);
+    private CopyOfBuilder(String id, String name, String description, Company company, List<Point> points, String routeOwner) {
+      super(id, name, description, company, points, routeOwner);
       Objects.requireNonNull(name);
     }
     
@@ -272,6 +293,11 @@ public final class Route implements Model {
     @Override
      public CopyOfBuilder points(List<Point> points) {
       return (CopyOfBuilder) super.points(points);
+    }
+    
+    @Override
+     public CopyOfBuilder routeOwner(String routeOwner) {
+      return (CopyOfBuilder) super.routeOwner(routeOwner);
     }
   }
   

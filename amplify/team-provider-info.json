@@ -14,10 +14,10 @@
     "categories": {
       "auth": {
         "demorolcognitoampify": {
+          "nativeClientId": "6pf9hml1rcika26sevd83sbb65",
           "userPoolId": "us-east-1_2d8DzKOLP",
           "userPoolName": "cognito-metro-dev-cobros-tramos",
-          "webClientId": "6pf9hml1rcika26sevd83sbb65",
-          "nativeClientId": "6pf9hml1rcika26sevd83sbb65"
+          "webClientId": "6pf9hml1rcika26sevd83sbb65"
         }
       },
       "api": {

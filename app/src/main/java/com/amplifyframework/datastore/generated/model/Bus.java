@@ -25,10 +25,9 @@ import static com.amplifyframework.core.model.query.predicate.QueryField.field;
 /** This is an auto generated class representing the Bus type in your schema. */
 @SuppressWarnings("all")
 @ModelConfig(pluralName = "Buses", type = Model.Type.USER, version = 1, authRules = {
-  @AuthRule(allow = AuthStrategy.PRIVATE, operations = { ModelOperation.CREATE, ModelOperation.READ, ModelOperation.UPDATE, ModelOperation.DELETE }),
-  @AuthRule(allow = AuthStrategy.GROUPS, groupClaim = "cognito:groups", groups = { "admin" }, provider = "userPools", operations = { ModelOperation.CREATE, ModelOperation.READ, ModelOperation.UPDATE, ModelOperation.DELETE }),
-  @AuthRule(allow = AuthStrategy.GROUPS, groupClaim = "cognito:groups", groups = { "empresa" }, provider = "userPools", operations = { ModelOperation.READ, ModelOperation.UPDATE }),
-  @AuthRule(allow = AuthStrategy.GROUPS, groupClaim = "cognito:groups", groups = { "dispositivo" }, provider = "userPools", operations = { ModelOperation.READ })
+  @AuthRule(allow = AuthStrategy.OWNER, ownerField = "busOwner", identityClaim = "cognito:username", provider = "userPools", operations = { ModelOperation.READ, ModelOperation.UPDATE }),
+  @AuthRule(allow = AuthStrategy.GROUPS, groupClaim = "cognito:groups", groups = { "Administrador" }, provider = "userPools", operations = { ModelOperation.CREATE, ModelOperation.READ, ModelOperation.UPDATE, ModelOperation.DELETE }),
+  @AuthRule(allow = AuthStrategy.GROUPS, groupClaim = "cognito:groups", groups = { "Empresa" }, provider = "userPools", operations = { ModelOperation.READ, ModelOperation.UPDATE })
 })
 @Index(name = "undefined", fields = {"id"})
 @Index(name = "busesByPlate", fields = {"plate"})
@@ -38,12 +37,14 @@ public final class Bus implements Model {
   public static final QueryField PLATE = field("Bus", "plate");
   public static final QueryField STATUS = field("Bus", "status");
   public static final QueryField COMPANY = field("Bus", "companyID");
+  public static final QueryField BUS_OWNER = field("Bus", "busOwner");
   public static final QueryField BUS_DEVICE_ID = field("Bus", "busDeviceId");
   private final @ModelField(targetType="ID", isRequired = true) String id;
   private final @ModelField(targetType="String", isRequired = true) String plate;
   private final @ModelField(targetType="Boolean") Boolean status;
   private final @ModelField(targetType="Company") @BelongsTo(targetName = "companyID", targetNames = {"companyID"}, type = Company.class) Company company;
   private final @ModelField(targetType="Device") @HasOne(associatedWith = "bus", type = Device.class) Device device = null;
+  private final @ModelField(targetType="String") String busOwner;
   private @ModelField(targetType="AWSDateTime", isReadOnly = true) Temporal.DateTime createdAt;
   private @ModelField(targetType="AWSDateTime", isReadOnly = true) Temporal.DateTime updatedAt;
   private final @ModelField(targetType="ID") String busDeviceId;
@@ -73,6 +74,10 @@ public final class Bus implements Model {
       return device;
   }
   
+  public String getBusOwner() {
+      return busOwner;
+  }
+  
   public Temporal.DateTime getCreatedAt() {
       return createdAt;
   }
@@ -85,11 +90,12 @@ public final class Bus implements Model {
       return busDeviceId;
   }
   
-  private Bus(String id, String plate, Boolean status, Company company, String busDeviceId) {
+  private Bus(String id, String plate, Boolean status, Company company, String busOwner, String busDeviceId) {
     this.id = id;
     this.plate = plate;
     this.status = status;
     this.company = company;
+    this.busOwner = busOwner;
     this.busDeviceId = busDeviceId;
   }
   
@@ -105,6 +111,7 @@ public final class Bus implements Model {
               ObjectsCompat.equals(getPlate(), bus.getPlate()) &&
               ObjectsCompat.equals(getStatus(), bus.getStatus()) &&
               ObjectsCompat.equals(getCompany(), bus.getCompany()) &&
+              ObjectsCompat.equals(getBusOwner(), bus.getBusOwner()) &&
               ObjectsCompat.equals(getCreatedAt(), bus.getCreatedAt()) &&
               ObjectsCompat.equals(getUpdatedAt(), bus.getUpdatedAt()) &&
               ObjectsCompat.equals(getBusDeviceId(), bus.getBusDeviceId());
@@ -118,6 +125,7 @@ public final class Bus implements Model {
       .append(getPlate())
       .append(getStatus())
       .append(getCompany())
+      .append(getBusOwner())
       .append(getCreatedAt())
       .append(getUpdatedAt())
       .append(getBusDeviceId())
@@ -133,6 +141,7 @@ public final class Bus implements Model {
       .append("plate=" + String.valueOf(getPlate()) + ", ")
       .append("status=" + String.valueOf(getStatus()) + ", ")
       .append("company=" + String.valueOf(getCompany()) + ", ")
+      .append("busOwner=" + String.valueOf(getBusOwner()) + ", ")
       .append("createdAt=" + String.valueOf(getCreatedAt()) + ", ")
       .append("updatedAt=" + String.valueOf(getUpdatedAt()) + ", ")
       .append("busDeviceId=" + String.valueOf(getBusDeviceId()))
@@ -158,6 +167,7 @@ public final class Bus implements Model {
       null,
       null,
       null,
+      null,
       null
     );
   }
@@ -167,6 +177,7 @@ public final class Bus implements Model {
       plate,
       status,
       company,
+      busOwner,
       busDeviceId);
   }
   public interface PlateStep {
@@ -179,6 +190,7 @@ public final class Bus implements Model {
     BuildStep id(String id);
     BuildStep status(Boolean status);
     BuildStep company(Company company);
+    BuildStep busOwner(String busOwner);
     BuildStep busDeviceId(String busDeviceId);
   }
   
@@ -188,16 +200,18 @@ public final class Bus implements Model {
     private String plate;
     private Boolean status;
     private Company company;
+    private String busOwner;
     private String busDeviceId;
     public Builder() {
       
     }
     
-    private Builder(String id, String plate, Boolean status, Company company, String busDeviceId) {
+    private Builder(String id, String plate, Boolean status, Company company, String busOwner, String busDeviceId) {
       this.id = id;
       this.plate = plate;
       this.status = status;
       this.company = company;
+      this.busOwner = busOwner;
       this.busDeviceId = busDeviceId;
     }
     
@@ -210,6 +224,7 @@ public final class Bus implements Model {
           plate,
           status,
           company,
+          busOwner,
           busDeviceId);
     }
     
@@ -233,6 +248,12 @@ public final class Bus implements Model {
     }
     
     @Override
+     public BuildStep busOwner(String busOwner) {
+        this.busOwner = busOwner;
+        return this;
+    }
+    
+    @Override
      public BuildStep busDeviceId(String busDeviceId) {
         this.busDeviceId = busDeviceId;
         return this;
@@ -250,8 +271,8 @@ public final class Bus implements Model {
   
 
   public final class CopyOfBuilder extends Builder {
-    private CopyOfBuilder(String id, String plate, Boolean status, Company company, String busDeviceId) {
-      super(id, plate, status, company, busDeviceId);
+    private CopyOfBuilder(String id, String plate, Boolean status, Company company, String busOwner, String busDeviceId) {
+      super(id, plate, status, company, busOwner, busDeviceId);
       Objects.requireNonNull(plate);
     }
     
@@ -268,6 +289,11 @@ public final class Bus implements Model {
     @Override
      public CopyOfBuilder company(Company company) {
       return (CopyOfBuilder) super.company(company);
+    }
+    
+    @Override
+     public CopyOfBuilder busOwner(String busOwner) {
+      return (CopyOfBuilder) super.busOwner(busOwner);
     }
     
     @Override

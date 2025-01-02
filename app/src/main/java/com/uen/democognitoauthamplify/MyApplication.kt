@@ -1,11 +1,7 @@
 package com.uen.democognitoauthamplify
 
 import android.app.Application
-import android.graphics.ColorSpace.Model
-import android.net.http.NetworkException
-import android.os.Build
 import android.util.Log
-import androidx.annotation.RequiresExtension
 import com.amplifyframework.AmplifyException
 import com.amplifyframework.api.aws.AWSApiPlugin
 import com.amplifyframework.auth.cognito.AWSCognitoAuthPlugin
@@ -17,8 +13,8 @@ import com.amplifyframework.datastore.DataStoreConflictHandler
 import com.amplifyframework.datastore.events.NetworkStatusEvent
 import com.amplifyframework.datastore.generated.model.AmplifyModelProvider
 import com.amplifyframework.datastore.generated.model.Bus
-import com.amplifyframework.datastore.generated.model.Company
 import com.amplifyframework.datastore.generated.model.Device
+import com.amplifyframework.datastore.generated.model.Route
 import com.amplifyframework.datastore.generated.model.Use
 import com.amplifyframework.datastore.syncengine.RetryHandler
 import com.amplifyframework.hub.HubChannel
@@ -32,82 +28,101 @@ import javax.inject.Inject
 
 @HiltAndroidApp
 class MyApplication : Application() {
-    @RequiresExtension(extension = Build.VERSION_CODES.S, version = 7)
+    private var networkSubscription: SubscriptionToken? = null
+
     override fun onCreate() {
         super.onCreate()
         configureAmplify()
     }
 
-    @RequiresExtension(extension = Build.VERSION_CODES.S, version = 7)
     private fun configureAmplify() {
         try {
-            // Configuración de logging para desarrollo
-            Amplify.addPlugin(AndroidLoggingPlugin(LogLevel.INFO))
+            //Amplify.addPlugin(AndroidLoggingPlugin(LogLevel.VERBOSE))
 
-            // Configuración de API y Auth
             Amplify.addPlugin(AWSApiPlugin())
             Amplify.addPlugin(AWSCognitoAuthPlugin())
+            Amplify.addPlugin(
+                AWSDataStorePlugin.builder()
+                    .modelProvider(AmplifyModelProvider.getInstance())
+                    .dataStoreConfiguration(
+                        DataStoreConfiguration.builder()
+                            .syncInterval(30, TimeUnit.SECONDS) // Ajustar según la carga
+                            .syncMaxRecords(500) // Ajustar para sincronizaciones más rápidas
+                            .syncPageSize(50) // Tamaño de página más pequeño
+                            .observeQueryMaxTime(60) // Tiempo máximo para observar cambios
+                            .conflictHandler { conflictData, onResolve ->
+                                Log.d("ConflictHandler", "Conflicto detectado: ${conflictData.local} vs ${conflictData.remote}")
+                                onResolve.accept(DataStoreConflictHandler.ConflictResolutionDecision.applyRemote())
+                            }.errorHandler { error ->
+                                Log.e("ErrorHandler", "Error en DataStore: ${error.message}", error)
+                            }.build()
+                    )
+                    .build()
+            )
 
-            // Configuración optimizada de DataStore
-            val dataStorePlugin = AWSDataStorePlugin.builder()
-                .modelProvider(AmplifyModelProvider.getInstance())
-                .dataStoreConfiguration(
-                    DataStoreConfiguration.builder()
-                        .syncInterval(15, TimeUnit.MINUTES) // Sincronización cada 15 minutos
-                        .syncMaxRecords(10_000) // Máximo de registros por sincronización
-                        .syncPageSize(1_000) // Tamaño de página optimizado
-                        .errorHandler { error ->
-                            Log.e("DataStore", "Error: ${error.message}")
-                            // Implementar lógica de reintentos si es necesario
-                            if (error.cause is NetworkException) {
-                                // Manejar errores de red
-                            }
-                        }
-                        .conflictHandler { conflictData, resolution ->
-                            Log.d("DataStore", "Conflicto detectado: ${conflictData.local} vs ${conflictData.remote}")
-                            resolution.accept(DataStoreConflictHandler.ConflictResolutionDecision.applyRemote())
-                        }
-                        .build()
-                )
-                .build()
-
-            Amplify.addPlugin(dataStorePlugin)
             Amplify.configure(applicationContext)
+            Log.i("MyApplication", "Amplify inicializado correctamente")
 
-            // Iniciar DataStore después de la autenticación
-            setupAuthListener()
+            authenticateUserAndSetupDataStore()
 
         } catch (error: AmplifyException) {
             Log.e("MyApplication", "Error inicializando Amplify", error)
         }
     }
 
-    private fun setupAuthListener() {
-        Amplify.Hub.subscribe(HubChannel.AUTH) { hubEvent ->
-            when (hubEvent.name) {
-                "signedIn" -> {
-                    // Iniciar DataStore cuando el usuario inicia sesión
-                    startDataStore()
+    private fun authenticateUserAndSetupDataStore() {
+        runBlocking {
+            Amplify.Auth.fetchAuthSession(
+                { session ->
+                    if (session.isSignedIn) {
+                        Amplify.Auth.getCurrentUser(
+                            { user ->
+                                Log.i("MyApplication", "Usuario autenticado: ${user.username}")
+                                setupDataStore(user.username)
+                            },
+                            { error ->
+                                Log.e("MyApplication", "Error obteniendo usuario actual", error)
+                            }
+                        )
+                    } else {
+                        Log.i("MyApplication", "No hay sesión de usuario activa")
+                    }
+                },
+                { error ->
+                    Log.e("MyApplication", "Error al obtener sesión de autenticación", error)
                 }
-                "signedOut" -> {
-                    // Limpiar DataStore cuando el usuario cierra sesión
-                    clearDataStore()
-                }
-            }
+            )
         }
     }
 
-    private fun startDataStore() {
-        Amplify.DataStore.start(
-            { Log.i("DataStore", "DataStore iniciado exitosamente") },
-            { error -> Log.e("DataStore", "Error iniciando DataStore", error) }
-        )
+    /**
+     * Configura DataStore con la configuración necesaria para el usuario autenticado
+     */
+    private fun setupDataStore(username: String) {
+        try {
+            Amplify.addPlugin(
+                AWSDataStorePlugin.builder()
+                    .modelProvider(AmplifyModelProvider.getInstance())
+                    .dataStoreConfiguration(
+                        DataStoreConfiguration.builder()
+                            .syncExpression(Use::class.java) { QueryField.field("deviceOwner").eq(username) }
+                            .syncExpression(Bus::class.java) { QueryField.field("busOwner").eq(username) }
+                            .syncExpression(Device::class.java) { QueryField.field("imei").eq(username) }
+                            .syncExpression(Route::class.java) { QueryField.field("routeOwner").eq(username) }
+                            .build()
+                    )
+                    .build()
+            )
+            Log.i("MyApplication", "DataStore configurado para el usuario: $username")
+        } catch (error: AmplifyException) {
+            Log.e("MyApplication", "Error configurando DataStore: ${error.message}", error)
+        }
     }
 
-    private fun clearDataStore() {
-        Amplify.DataStore.clear(
-            { Log.i("DataStore", "DataStore limpiado exitosamente") },
-            { error -> Log.e("DataStore", "Error limpiando DataStore", error) }
-        )
+    override fun onTerminate() {
+        super.onTerminate()
+        networkSubscription?.let {
+            Amplify.Hub.unsubscribe(it)
+        }
     }
 }

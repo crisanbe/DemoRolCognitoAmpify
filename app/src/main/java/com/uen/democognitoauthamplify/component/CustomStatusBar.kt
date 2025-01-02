@@ -2,6 +2,7 @@ package com.uen.democognitoauthamplify.component
 
 import android.content.Context
 import android.location.LocationManager
+import android.util.Log
 import androidx.compose.animation.core.*
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
@@ -24,7 +25,9 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.amplifyframework.core.Amplify
+import com.amplifyframework.core.model.query.predicate.QueryField
 import com.amplifyframework.datastore.generated.model.Bus
+import com.amplifyframework.datastore.generated.model.Device
 import kotlinx.coroutines.delay
 import java.text.SimpleDateFormat
 import java.util.*
@@ -153,6 +156,39 @@ fun checkGpsStatus(context: Context): Boolean {
     return locationManager.isProviderEnabled(LocationManager.GPS_PROVIDER)
 }
 
-fun queryBusPlate(username: String, onResult: (String) -> Unit) {
+fun queryBusPlate(imei: String, onResult: (String) -> Unit) {
+    val deviceQuery = QueryField.field("imei").eq(imei)
 
+    Amplify.DataStore.query(
+        Device::class.java,
+        deviceQuery,
+        { devices ->
+            if (devices.hasNext()) {
+                val device = devices.next()
+                // Query the bus using busID from device
+                Amplify.DataStore.query(
+                    Bus::class.java,
+                    QueryField.field("id").eq(device.bus.id),
+                    { buses ->
+                        if (buses.hasNext()) {
+                            val bus = buses.next()
+                            onResult(bus.plate)
+                        } else {
+                            onResult("No Bus")
+                        }
+                    },
+                    { error ->
+                        Log.e("StatusBar", "Error querying bus", error)
+                        onResult("Error")
+                    }
+                )
+            } else {
+                onResult("No Device")
+            }
+        },
+        { error ->
+            Log.e("StatusBar", "Error querying device", error)
+            onResult("Error")
+        }
+    )
 }
