@@ -1,4 +1,3 @@
-/*
 package com.uen.democognitoauthamplify
 
 import androidx.compose.animation.core.*
@@ -20,9 +19,7 @@ import androidx.lifecycle.MutableLiveData
 import com.uen.democognitoauthamplify.util.SyncProgressViewModel
 
 @Composable
-fun AnimatedProgressBar(viewModel: SyncProgressViewModel) {
-    val progress by viewModel.syncProgress.collectAsState(initial = 0)
-    val message by viewModel.syncMessage.collectAsState(initial = "Sincronizando datos...")
+fun AnimatedProgressBar(message: String) {
 
     // Animación de deslizamiento continuo
     val infiniteTransition = rememberInfiniteTransition()
@@ -88,7 +85,7 @@ fun AnimatedProgressBar(viewModel: SyncProgressViewModel) {
 
             // Mostrar porcentaje
             Text(
-                text = "$progress%",
+                text = "65%",
                 style = MaterialTheme.typography.bodyLarge.copy(),
                 color = Color.White
             )
@@ -96,7 +93,6 @@ fun AnimatedProgressBar(viewModel: SyncProgressViewModel) {
     }
 }
 
-*/
 /*
 @Preview(showBackground = true)
 @Composable
@@ -107,6 +103,4 @@ fun AnimatedProgressBarPreview() {
     }
     AnimatedProgressBar(viewModel = fakeViewModel)
 }
-*//*
-
 */
