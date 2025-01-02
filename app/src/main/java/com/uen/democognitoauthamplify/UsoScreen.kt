@@ -62,12 +62,13 @@ import com.uen.democognitoauthamplify.component.TodoItem
 import com.uen.democognitoauthamplify.component.UpdateItemDialog
 import com.uen.democognitoauthamplify.component.VerticalScrollbar
 import com.uen.democognitoauthamplify.util.SyncProgressViewModel
-import com.uen.democognitoauthamplify.util.Utils
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.FlowPreview
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.debounce
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
 import java.text.SimpleDateFormat
 import java.util.Date
 import java.util.TimeZone
@@ -81,214 +82,96 @@ fun UsoScreen(
     drawerState: DrawerState = rememberDrawerState(DrawerValue.Closed)
 ) {
     val scope = rememberCoroutineScope()
-    var todoList by remember { mutableStateOf(emptyList<Use>()) }
+    var todoList by remember { mutableStateOf<List<Use>>(emptyList()) }
     var totalItems by remember { mutableIntStateOf(0) }
     val listState = rememberLazyListState()
     var selectedTodo by remember { mutableStateOf<Use?>(null) }
-    val pageSize = 10
-    var currentPage by remember { mutableIntStateOf(1) }
     var isLoading by remember { mutableStateOf(false) }
-    val isSyncComplete by syncProgressViewModel.isSyncComplete.collectAsState()
-    val synchronizedItems by syncProgressViewModel.synchronizedItems.collectAsState()
     var isSaving by remember { mutableStateOf(false) }
-    val context = LocalContext.current
+    val synchronizedItems by syncProgressViewModel.synchronizedItems.collectAsState()
+    val syncState by syncProgressViewModel.syncState.collectAsState()
 
-    fun queryTodoListPaginated(page: Int) {
-        if (isLoading) return
-        isLoading = true
-
-        // Consultar el Device usando el IMEI
-        val deviceFilter = QueryField.field("deviceOwner").eq(username)
+    // Función para obtener el deviceID usando el IMEI (username)
+    fun queryDeviceId(onDeviceFound: (String) -> Unit) {
+        val deviceQuery = QueryField.field("imei").eq(username)
         Amplify.DataStore.query(
             Device::class.java,
-            deviceFilter,
+            deviceQuery,
+            { devices ->
+                if (devices.hasNext()) {
+                    onDeviceFound(devices.next().id)
+                } else {
+                    Log.e("UsoScreen", "No device found for IMEI: $username")
+                }
+            },
+            { error -> Log.e("UsoScreen", "Error querying device", error) }
+        )
+    }
+
+    // Configurar observación de datos
+    LaunchedEffect(Unit) {
+        queryDeviceId { deviceId ->
+            val useQuery = QueryField.field("deviceID").eq(deviceId)
+            val options = ObserveQueryOptions(
+                useQuery,
+                listOf(QuerySortBy("createdAt", QuerySortOrder.DESCENDING))
+            )
+
+            Amplify.DataStore.observeQuery(
+                Use::class.java,
+                options,
+                { Log.i("UsoScreen", "Query observation started") },
+                { snapshot ->
+                    todoList = snapshot.items
+                    totalItems = snapshot.items.size
+                    Log.i("UsoScreen", "Data updated, synced: ${snapshot.isSynced}")
+                },
+                { error -> Log.e("UsoScreen", "Query observation failed", error) },
+                { Log.i("UsoScreen", "Query observation completed") }
+            )
+        }
+    }
+
+    LaunchedEffect(Unit) {
+        val deviceQuery = QueryField.field("imei").eq(username)
+
+        Amplify.DataStore.query(
+            Device::class.java,
+            deviceQuery,
             { devices ->
                 if (devices.hasNext()) {
                     val device = devices.next()
-                    val deviceID = device.id
+                    val useQuery = QueryField.field("deviceID").eq(device.id)
 
-                    // Consultar Use usando el deviceID
-                    val useFilter = QueryField.field("deviceID").eq(deviceID)
-                    Amplify.DataStore.query(
+                    val options = ObserveQueryOptions(
+                        useQuery,
+                        listOf(QuerySortBy("createdAt", QuerySortOrder.DESCENDING))
+                    )
+
+                    val cancelable = Amplify.DataStore.observeQuery(
                         Use::class.java,
-                        useFilter,
-                        { uses ->
-                            val tempList = mutableListOf<Use>()
-                            var skipCount = (page - 1) * pageSize
-                            var count = 0
-
-                            while (uses.hasNext() && count < pageSize) {
-                                val item = uses.next()
-                                if (skipCount > 0) {
-                                    skipCount--
-                                } else {
-                                    tempList.add(item)
-                                    count++
-                                }
-                            }
-
-                            todoList = (todoList + tempList).distinctBy { it.id }
+                        options,
+                        { Log.i("UsoScreen", "Observación iniciada") },
+                        { snapshot ->
+                            todoList = snapshot.items
+                            totalItems = snapshot.items.size
                             isLoading = false
                         },
-                        { failure ->
-                            Log.e("UsoScreen", "Query failed for Use.", failure)
+                        { error ->
+                            Log.e("UsoScreen", "Error en observación", error)
                             isLoading = false
-                        }
+                        },
+                        { Log.i("UsoScreen", "Observación finalizada") }
                     )
-                } else {
-                    Log.e("UsoScreen", "No device found for the provided IMEI.")
-                    isLoading = false
+
+
                 }
             },
-            { failure ->
-                Log.e("UsoScreen", "Query failed for Device.", failure)
-                isLoading = false
-            }
+            { error -> Log.e("UsoScreen", "Error consultando device", error) }
         )
     }
 
-    fun queryTotalItems() {
-        // Consultar el Device usando el IMEI
-        val deviceFilter = QueryField.field("deviceOwner").eq(username)
-        Amplify.DataStore.query(Device::class.java, deviceFilter, { devices ->
-            if (devices.hasNext()) {
-                val device = devices.next()
-                val deviceID = device.id
-
-                // Consultar Use usando el deviceID
-                val useFilter = QueryField.field("deviceID").eq(deviceID)
-                Amplify.DataStore.query(Use::class.java, useFilter, { uses ->
-                    var count = 0
-                    while (uses.hasNext()) {
-                        uses.next()
-                        count++
-                    }
-                    totalItems = count
-                    Log.i("UsoScreen", "Total items recalculated: $totalItems")
-                }, { failure -> Log.e("UsoScreen", "Query failed for Use.", failure) })
-            } else {
-                Log.e("UsoScreen", "No device found for the provided IMEI.")
-                totalItems = 0
-            }
-        }, { failure -> Log.e("UsoScreen", "Query failed for Device.", failure) })
-    }
-
-    LaunchedEffect(isSyncComplete) {
-        if (isSyncComplete) {
-            Amplify.DataStore.start(
-                { Log.i("UsoScreen", "Sincronización completa asegurada.") },
-                { error -> Log.e("UsoScreen", "Error sincronizando DataStore.", error) }
-            )
-            queryTodoListPaginated(1)
-            queryTotalItems()
-        }
-    }
-
-
-    LaunchedEffect(Unit) {
-        val tag = "ObserveQuery"
-        val onQuerySnapshot: Consumer<DataStoreQuerySnapshot<Use>> =
-            Consumer<DataStoreQuerySnapshot<Use>> { value: DataStoreQuerySnapshot<Use> ->
-                Log.d(tag, "success on snapshot")
-                Log.d(tag, "number of records: " + value.items.size)
-                Log.d(tag, "sync status: " + value.isSynced)
-            }
-
-        val observationStarted =
-            Consumer { _: Cancelable ->
-                Log.d(tag, "success on cancelable")
-            }
-        val onObservationError =
-            Consumer { value: DataStoreException ->
-                Log.d(tag, "error on snapshot $value")
-            }
-        val onObservationComplete = Action {
-            Log.d(tag, "complete")
-        }
-        val predicate: QueryPredicate = QueryField.field("imei").eq(username)
-        val querySortBy = QuerySortBy(Use.USO_OWNER.toString(), QuerySortOrder.DESCENDING)
-
-        val options = ObserveQueryOptions(predicate, listOf(querySortBy))
-        Amplify.DataStore.observeQuery(
-            Use::class.java,
-            options,
-            observationStarted,
-            onQuerySnapshot,
-            onObservationError,
-            onObservationComplete
-        )
-    }
-
-    LaunchedEffect(isSyncComplete) {
-        if (isSyncComplete) {
-            Amplify.DataStore.start(
-                { Log.i("UsoScreen", "Sincronización completa asegurada.") },
-                { error -> Log.e("UsoScreen", "Error sincronizando DataStore.", error) }
-            )
-            queryTodoListPaginated(1)
-            queryTotalItems()
-        }
-    }
-
-    DisposableEffect(Unit) {
-        val observeOperation = Amplify.DataStore.observe(
-            Use::class.java,
-            { Log.i("MyAmplifyApp", "Observation started") },
-            { change ->
-                when (change.type()) {
-                    DataStoreItemChange.Type.CREATE -> {
-                        val newItem = change.item() as Use
-                        if (!todoList.any { it.id == newItem.id }) {
-                            todoList = listOf(newItem) + todoList
-                        }
-                    }
-
-                    DataStoreItemChange.Type.UPDATE -> {
-                        val updatedItem = change.item() as Use
-                        todoList = todoList.map { if (it.id == updatedItem.id) updatedItem else it }
-                    }
-
-                    DataStoreItemChange.Type.DELETE -> {
-                        val deletedItem = change.item() as Use
-                        todoList = todoList.filter { it.id != deletedItem.id }
-                        /*scope.launch {
-                            syncProgressViewModel.deleteSynchronizedItem(deletedItem.id)
-                        }*/
-                    }
-                }
-                queryTotalItems()
-            },
-            { error -> Log.e("MyAmplifyApp", "Observation failed", error) },
-            { Log.i("MyAmplifyApp", "Observation completed") }
-        )
-
-        onDispose {
-            observeOperation.closeIfCloseable()
-            Log.i("MyAmplifyApp", "Observation stopped")
-        }
-    }
-
-    LaunchedEffect(listState) {
-        snapshotFlow { listState.layoutInfo.visibleItemsInfo }
-            .debounce(300) // Evitar demasiadas llamadas en intervalos cortos
-            .collect { visibleItems ->
-                val lastVisibleItem = visibleItems.lastOrNull()
-                if (lastVisibleItem != null &&
-                    lastVisibleItem.index == todoList.size - 1 && // Último visible
-                    todoList.size < totalItems && // Aún hay más elementos para cargar
-                    !isLoading // Evitar llamadas duplicadas mientras se carga
-                ) {
-                    currentPage++
-                    queryTodoListPaginated(currentPage)
-                }
-            }
-    }
-
-    /*LaunchedEffect(Unit) {
-        Utils.scheduleKeepLastFiveUsos(context ,username)
-    }
-*/
-    // Raíz de la pantalla
+    // UI Principal
     Box(modifier = Modifier.fillMaxSize()) {
         Scaffold(
             snackbarHost = { SnackbarHost(snackbarHostState) },
@@ -297,76 +180,20 @@ fun UsoScreen(
                 AppBar(
                     username = username,
                     totalItems = "($totalItems)",
-                    onCreateTodo = {
-                        scope.launch(Dispatchers.IO) {
-                            // Buscar el dispositivo asociado al IMEI
-                            val deviceFilter = QueryField.field("imei").eq(username)
-                            Amplify.DataStore.query(Device::class.java, deviceFilter,
-                                { devices ->
-                                    if (devices.hasNext()) {
-                                        val device = devices.next()
-
-                                        // Crear y guardar un nuevo 'Use' asociado al dispositivo
-                                        val currentTime = Temporal.DateTime(Date(), -5 * 60) // Ajustar según zona horaria
-                                        val newUse = Use.builder()
-                                            .cardNumber("12345") // Ajustar según lógica de negocio
-                                            .balance(1000.0) // Ajustar según lógica de negocio
-                                            .sequenceNumber(1) // Ajustar según lógica de negocio
-                                            .status(true) // Pendiente
-                                            .usoOwner(username) // El IMEI
-                                            .device(device) // Dispositivo asociado
-                                            .build()
-
-                                        Amplify.DataStore.save(newUse,
-                                            {
-                                                Log.i("UsoScreen", "Saved Use: ${newUse.id}")
-                                            },
-                                            { error ->
-                                                Log.e("UsoScreen", "Failed to save Use", error)
-                                            }
-                                        )
-                                    queryTodoListPaginated(currentPage)
-                                    queryTotalItems()
-                                } else {
-                                    Log.e("UsoScreen", "No device found for the provided username.")
-                                }
-                            }, { error ->
-                                Log.e("UsoScreen", "Failed to query Device.", error)
-                            })
-                        }
-                    },
+                    onCreateTodo = { createNewUso(username, scope) },
                     onCreateVarious = { count ->
                         scope.launch {
                             isSaving = true
-                            saveUsosWithDelay(username, count) {
+                            createMultipleUsos(username, count) {
                                 isSaving = false
-                                queryTodoListPaginated(currentPage)
-                                queryTotalItems()
                             }
                         }
                     },
                     onDeleteAllTodos = {
-                        scope.launch(Dispatchers.IO) {
-                            val userFilter = QueryField.field("usoOwner").eq(username)
-                            Amplify.DataStore.query(Use::class.java, userFilter, { items ->
-                                val idsToDelete = mutableListOf<String>()
-                                while (items.hasNext()) {
-                                    val item = items.next()
-                                    idsToDelete.add(item.id)
-                                    Amplify.DataStore.delete(
-                                        item,
-                                        { Log.i("MyAmplifyApp", "Deleted item: ${item.id}") },
-                                        { Log.e("MyAmplifyApp", "Could not delete item", it) })
-                                }
-                                todoList = emptyList()
-                                queryTotalItems()
-                              /*  scope.launch {
-                                    syncProgressViewModel.deleteSynchronizedItems(idsToDelete)
-                                }*/
-                            }, { Log.e("MyAmplifyApp", "Query failed", it) })
+                        scope.launch {
+                            deleteAllUsos(username)
                         }
                     },
-                    //onSignOut = { Amplify.Auth.signOut { Log.i("Amplify", "Signed out") } },
                     drawerState = drawerState
                 )
             },
@@ -374,7 +201,6 @@ fun UsoScreen(
                 CustomStatusBar(username = username)
             }
         ) { paddingValues ->
-
             LazyColumn(
                 state = listState,
                 modifier = Modifier
@@ -386,103 +212,186 @@ fun UsoScreen(
                         todo = task,
                         index = index,
                         synchronizedItems = synchronizedItems,
-                        onSelect = { selectedTodo = it })
+                        onSelect = { selectedTodo = it }
+                    )
                 }
                 if (isLoading || isSaving) {
-                    item {
-                        Box(
-                            modifier = Modifier
-                                .fillMaxWidth()
-                                .padding(16.dp),
-                            contentAlignment = Alignment.Center
-                        ) {
-                            CircularProgressIndicator(
-                                color = Color(0xFF619B22),
-                                strokeWidth = 2.dp
-                            )
-                        }
-                    }
+                    item { LoadingIndicator() }
                 }
             }
+
+            // ScrollBar
+            VerticalScrollbar(
+                modifier = Modifier.align(Alignment.CenterEnd),
+                listState = listState,
+                itemCount = todoList.size
+            )
         }
+
+        // Dialog de actualización
         selectedTodo?.let { todo ->
             UpdateItemDialog(
                 todo = todo,
                 onDismiss = { selectedTodo = null },
-                onUpdate = { updatedItem ->
-                    Amplify.DataStore.save(
-                        updatedItem,
-                        { Log.i("MyAmplifyApp", "Updated item: ${updatedItem.id}") },
-                        { Log.e("MyAmplifyApp", "Could not update item", it) })
-                    selectedTodo = null
-                },
-                onDelete = {
-                    scope.launch(Dispatchers.IO) {
-                        Amplify.DataStore.delete(
-                            it,
-                            { Log.i("MyAmplifyApp", "Deleted item: ${it.item()}") },
-                            { Log.e("MyAmplifyApp", "Could not delete item", it) })
-                        queryTodoListPaginated(currentPage)
-                        queryTotalItems()
-                        //syncProgressViewModel.deleteSynchronizedItem(it.id)
-                    }
-                }
+                onUpdate = { updatedItem -> updateUso(updatedItem) },
+                onDelete = { deleteUso(it, scope) }
             )
         }
-        VerticalScrollbar(
-            modifier = Modifier.align(Alignment.CenterEnd),
-            listState = listState,
-            itemCount = todoList.size
-        )
-    }
 
-    // Superposición del loader
-    if (isSaving) {
-        Box(
-            modifier = Modifier
-                .fillMaxSize()
-                .background(Color(0x80000000)), // Fondo semitransparente
-            contentAlignment = Alignment.Center
-        ) {
-            Column(horizontalAlignment = Alignment.CenterHorizontally) {
-                CircularProgressIndicator(
-                    modifier = Modifier.size(48.dp),
-                    color = Color.Yellow,
-                    strokeWidth = 4.dp
-                )
-                Text(
-                    text = "Guardando datos...",
-                    modifier = Modifier.padding(top = 16.dp),
-                    style = MaterialTheme.typography.bodyMedium,
-                    color = Color.White
-                )
-            }
+        // Overlay de guardado
+        if (isSaving) {
+            SavingOverlay()
         }
     }
 }
 
-// Función para guardar los usos con un retraso simulado
-fun saveUsosWithDelay(username: String, count: Int, onComplete: () -> Unit) {
-    val currentTime = Temporal.DateTime(Date(), -5 * 60)
-    val scope = CoroutineScope(Dispatchers.IO)
+private fun createNewUso(username: String, scope: CoroutineScope) {
+    scope.launch(Dispatchers.IO) {
+        val deviceQuery = QueryField.field("imei").eq(username)
 
-    scope.launch {
-        repeat(count) { index ->
-            Amplify.DataStore.save(
-                Use.builder()
-                    .cardNumber((1000..9999).random().toString())
-                    .balance((1000..2000).random().toDouble())
-                    .sequenceNumber(index + 1)
-                    .status(false) // Pendiente
-                    .usoOwner(username)
-                    .build(),
-                {
-                    Log.i("UsoScreen", "Saved item: ${it.item()}")
-                },
-                { error -> Log.e("UsoScreen", "Error saving item", error) }
+        Amplify.DataStore.query(
+            Device::class.java,
+            deviceQuery,
+            { devices ->
+                if (devices.hasNext()) {
+                    val device = devices.next()
+                    val newUse = Use.builder()
+                        .device(device)  // Esto internamente manejará el deviceID
+                        .cardNumber("1234")
+                        .balance(1000.0) // Usa Double como está definido en el modelo
+                        .sequenceNumber(1)
+                        .status(false)
+                        .build()
+
+                    Amplify.DataStore.save(
+                        newUse,
+                        { saved ->
+                            Log.i("UsoScreen", "Use guardado con ID: ${saved.item()}")
+                            Log.i("UsoScreen", "Device asociado: ${saved.item().id}")
+                        },
+                        { error -> Log.e("UsoScreen", "Error guardando use", error) }
+                    )
+                } else {
+                    Log.e("UsoScreen", "No se encontró dispositivo para IMEI: $username")
+                }
+            },
+            { error -> Log.e("UsoScreen", "Error consultando dispositivo", error) }
+        )
+    }
+}
+
+private suspend fun createMultipleUsos(
+    username: String,
+    count: Int,
+    onComplete: () -> Unit
+) {
+    withContext(Dispatchers.IO) {
+        val deviceQuery = QueryField.field("imei").eq(username)
+
+        Amplify.DataStore.query(
+            Device::class.java,
+            deviceQuery,
+            { devices ->
+                if (devices.hasNext()) {
+                    val device = devices.next()
+                    repeat(count) { index ->
+                        val use = Use.builder()
+                            .device(device)
+                            .balance((1000..2000).random().toDouble())
+                            .sequenceNumber(index + 1)
+                            .status(false)
+                            .cardNumber((1000..9999).random().toString())
+                            .build()
+
+                        Amplify.DataStore.save(
+                            use,
+                            { Log.i("UsoScreen", "Use created: ${use.id}") },
+                            { error -> Log.e("UsoScreen", "Error creating use", error) }
+                        )
+                    }
+                }
+                onComplete()
+            },
+            { error ->
+                Log.e("UsoScreen", "Error querying device", error)
+                onComplete()
+            }
+        )
+    }
+}
+
+private fun deleteAllUsos(deviceId: String) {
+    val useQuery = QueryField.field("deviceID").eq(deviceId)
+    Amplify.DataStore.query(
+        Use::class.java,
+        useQuery,
+        { uses ->
+            while (uses.hasNext()) {
+                val use = uses.next()
+                Amplify.DataStore.delete(
+                    use,
+                    { Log.i("UsoScreen", "Deleted use: ${use.id}") },
+                    { error -> Log.e("UsoScreen", "Error deleting use", error) }
+                )
+            }
+        },
+        { error -> Log.e("UsoScreen", "Error querying uses", error) }
+    )
+}
+
+private fun updateUso(uso: Use) {
+    Amplify.DataStore.save(
+        uso,
+        { Log.i("UsoScreen", "Updated use: ${uso.id}") },
+        { error -> Log.e("UsoScreen", "Error updating use", error) }
+    )
+}
+
+private fun deleteUso(uso: Use, scope: CoroutineScope) {
+    scope.launch(Dispatchers.IO) {
+        Amplify.DataStore.delete(
+            uso,
+            { Log.i("UsoScreen", "Deleted use: ${uso.id}") },
+            { error -> Log.e("UsoScreen", "Error deleting use", error) }
+        )
+    }
+}
+
+@Composable
+private fun LoadingIndicator() {
+    Box(
+        modifier = Modifier
+            .fillMaxWidth()
+            .padding(16.dp),
+        contentAlignment = Alignment.Center
+    ) {
+        CircularProgressIndicator(
+            color = Color(0xFF619B22),
+            strokeWidth = 2.dp
+        )
+    }
+}
+
+@Composable
+private fun SavingOverlay() {
+    Box(
+        modifier = Modifier
+            .fillMaxSize()
+            .background(Color(0x80000000)),
+        contentAlignment = Alignment.Center
+    ) {
+        Column(horizontalAlignment = Alignment.CenterHorizontally) {
+            CircularProgressIndicator(
+                modifier = Modifier.size(48.dp),
+                color = Color.Yellow,
+                strokeWidth = 4.dp
             )
-            kotlinx.coroutines.delay(200) // Simula un tiempo de procesamiento por elemento
+            Text(
+                text = "Guardando datos...",
+                modifier = Modifier.padding(top = 16.dp),
+                style = MaterialTheme.typography.bodyMedium,
+                color = Color.White
+            )
         }
-        onComplete()
     }
 }

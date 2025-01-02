@@ -1,0 +1,622 @@
+# this is an auto generated file. This will be overwritten
+
+subscription OnCreateUse($filter: ModelSubscriptionUseFilterInput) {
+  onCreateUse(filter: $filter) {
+    id
+    cardNumber
+    balance
+    sequenceNumber
+    status
+    deviceID
+    device {
+      id
+      imei
+      civicaSerial
+      companyID
+      busID
+      routeID
+      status
+      createdAt
+      updatedAt
+      _version
+      _deleted
+      _lastChangedAt
+      __typename
+    }
+    createdAt
+    updatedAt
+    _version
+    _deleted
+    _lastChangedAt
+    __typename
+  }
+}
+
+subscription OnUpdateUse($filter: ModelSubscriptionUseFilterInput) {
+  onUpdateUse(filter: $filter) {
+    id
+    cardNumber
+    balance
+    sequenceNumber
+    status
+    deviceID
+    device {
+      id
+      imei
+      civicaSerial
+      companyID
+      busID
+      routeID
+      status
+      createdAt
+      updatedAt
+      _version
+      _deleted
+      _lastChangedAt
+      __typename
+    }
+    createdAt
+    updatedAt
+    _version
+    _deleted
+    _lastChangedAt
+    __typename
+  }
+}
+
+subscription OnDeleteUse($filter: ModelSubscriptionUseFilterInput) {
+  onDeleteUse(filter: $filter) {
+    id
+    cardNumber
+    balance
+    sequenceNumber
+    status
+    deviceID
+    device {
+      id
+      imei
+      civicaSerial
+      companyID
+      busID
+      routeID
+      status
+      createdAt
+      updatedAt
+      _version
+      _deleted
+      _lastChangedAt
+      __typename
+    }
+    createdAt
+    updatedAt
+    _version
+    _deleted
+    _lastChangedAt
+    __typename
+  }
+}
+
+subscription OnCreateDevice($filter: ModelSubscriptionDeviceFilterInput) {
+  onCreateDevice(filter: $filter) {
+    id
+    imei
+    civicaSerial
+    companyID
+    busID
+    routeID
+    company {
+      id
+      username
+      name
+      rutaCivica
+      commissionPerTicket
+      createdAt
+      updatedAt
+      _version
+      _deleted
+      _lastChangedAt
+      __typename
+    }
+    bus {
+      id
+      plate
+      status
+      companyID
+      createdAt
+      updatedAt
+      _version
+      _deleted
+      _lastChangedAt
+      busDeviceId
+      __typename
+    }
+    route {
+      id
+      name
+      description
+      companyID
+      createdAt
+      updatedAt
+      _version
+      _deleted
+      _lastChangedAt
+      __typename
+    }
+    uses {
+      nextToken
+      startedAt
+      __typename
+    }
+    status
+    createdAt
+    updatedAt
+    _version
+    _deleted
+    _lastChangedAt
+    __typename
+  }
+}
+
+subscription OnUpdateDevice($filter: ModelSubscriptionDeviceFilterInput) {
+  onUpdateDevice(filter: $filter) {
+    id
+    imei
+    civicaSerial
+    companyID
+    busID
+    routeID
+    company {
+      id
+      username
+      name
+      rutaCivica
+      commissionPerTicket
+      createdAt
+      updatedAt
+      _version
+      _deleted
+      _lastChangedAt
+      __typename
+    }
+    bus {
+      id
+      plate
+      status
+      companyID
+      createdAt
+      updatedAt
+      _version
+      _deleted
+      _lastChangedAt
+      busDeviceId
+      __typename
+    }
+    route {
+      id
+      name
+      description
+      companyID
+      createdAt
+      updatedAt
+      _version
+      _deleted
+      _lastChangedAt
+      __typename
+    }
+    uses {
+      nextToken
+      startedAt
+      __typename
+    }
+    status
+    createdAt
+    updatedAt
+    _version
+    _deleted
+    _lastChangedAt
+    __typename
+  }
+}
+
+subscription OnDeleteDevice($filter: ModelSubscriptionDeviceFilterInput) {
+  onDeleteDevice(filter: $filter) {
+    id
+    imei
+    civicaSerial
+    companyID
+    busID
+    routeID
+    company {
+      id
+      username
+      name
+      rutaCivica
+      commissionPerTicket
+      createdAt
+      updatedAt
+      _version
+      _deleted
+      _lastChangedAt
+      __typename
+    }
+    bus {
+      id
+      plate
+      status
+      companyID
+      createdAt
+      updatedAt
+      _version
+      _deleted
+      _lastChangedAt
+      busDeviceId
+      __typename
+    }
+    route {
+      id
+      name
+      description
+      companyID
+      createdAt
+      updatedAt
+      _version
+      _deleted
+      _lastChangedAt
+      __typename
+    }
+    uses {
+      nextToken
+      startedAt
+      __typename
+    }
+    status
+    createdAt
+    updatedAt
+    _version
+    _deleted
+    _lastChangedAt
+    __typename
+  }
+}
+
+subscription OnCreateCompany($filter: ModelSubscriptionCompanyFilterInput) {
+  onCreateCompany(filter: $filter) {
+    id
+    username
+    name
+    rutaCivica
+    commissionPerTicket
+    devices {
+      nextToken
+      startedAt
+      __typename
+    }
+    buses {
+      nextToken
+      startedAt
+      __typename
+    }
+    routes {
+      nextToken
+      startedAt
+      __typename
+    }
+    createdAt
+    updatedAt
+    _version
+    _deleted
+    _lastChangedAt
+    __typename
+  }
+}
+
+subscription OnUpdateCompany($filter: ModelSubscriptionCompanyFilterInput) {
+  onUpdateCompany(filter: $filter) {
+    id
+    username
+    name
+    rutaCivica
+    commissionPerTicket
+    devices {
+      nextToken
+      startedAt
+      __typename
+    }
+    buses {
+      nextToken
+      startedAt
+      __typename
+    }
+    routes {
+      nextToken
+      startedAt
+      __typename
+    }
+    createdAt
+    updatedAt
+    _version
+    _deleted
+    _lastChangedAt
+    __typename
+  }
+}
+
+subscription OnDeleteCompany($filter: ModelSubscriptionCompanyFilterInput) {
+  onDeleteCompany(filter: $filter) {
+    id
+    username
+    name
+    rutaCivica
+    commissionPerTicket
+    devices {
+      nextToken
+      startedAt
+      __typename
+    }
+    buses {
+      nextToken
+      startedAt
+      __typename
+    }
+    routes {
+      nextToken
+      startedAt
+      __typename
+    }
+    createdAt
+    updatedAt
+    _version
+    _deleted
+    _lastChangedAt
+    __typename
+  }
+}
+
+subscription OnCreateBus($filter: ModelSubscriptionBusFilterInput) {
+  onCreateBus(filter: $filter) {
+    id
+    plate
+    status
+    companyID
+    company {
+      id
+      username
+      name
+      rutaCivica
+      commissionPerTicket
+      createdAt
+      updatedAt
+      _version
+      _deleted
+      _lastChangedAt
+      __typename
+    }
+    device {
+      id
+      imei
+      civicaSerial
+      companyID
+      busID
+      routeID
+      status
+      createdAt
+      updatedAt
+      _version
+      _deleted
+      _lastChangedAt
+      __typename
+    }
+    createdAt
+    updatedAt
+    _version
+    _deleted
+    _lastChangedAt
+    busDeviceId
+    __typename
+  }
+}
+
+subscription OnUpdateBus($filter: ModelSubscriptionBusFilterInput) {
+  onUpdateBus(filter: $filter) {
+    id
+    plate
+    status
+    companyID
+    company {
+      id
+      username
+      name
+      rutaCivica
+      commissionPerTicket
+      createdAt
+      updatedAt
+      _version
+      _deleted
+      _lastChangedAt
+      __typename
+    }
+    device {
+      id
+      imei
+      civicaSerial
+      companyID
+      busID
+      routeID
+      status
+      createdAt
+      updatedAt
+      _version
+      _deleted
+      _lastChangedAt
+      __typename
+    }
+    createdAt
+    updatedAt
+    _version
+    _deleted
+    _lastChangedAt
+    busDeviceId
+    __typename
+  }
+}
+
+subscription OnDeleteBus($filter: ModelSubscriptionBusFilterInput) {
+  onDeleteBus(filter: $filter) {
+    id
+    plate
+    status
+    companyID
+    company {
+      id
+      username
+      name
+      rutaCivica
+      commissionPerTicket
+      createdAt
+      updatedAt
+      _version
+      _deleted
+      _lastChangedAt
+      __typename
+    }
+    device {
+      id
+      imei
+      civicaSerial
+      companyID
+      busID
+      routeID
+      status
+      createdAt
+      updatedAt
+      _version
+      _deleted
+      _lastChangedAt
+      __typename
+    }
+    createdAt
+    updatedAt
+    _version
+    _deleted
+    _lastChangedAt
+    busDeviceId
+    __typename
+  }
+}
+
+subscription OnCreateRoute($filter: ModelSubscriptionRouteFilterInput) {
+  onCreateRoute(filter: $filter) {
+    id
+    name
+    description
+    companyID
+    company {
+      id
+      username
+      name
+      rutaCivica
+      commissionPerTicket
+      createdAt
+      updatedAt
+      _version
+      _deleted
+      _lastChangedAt
+      __typename
+    }
+    devices {
+      nextToken
+      startedAt
+      __typename
+    }
+    points {
+      lat
+      lng
+      name
+      __typename
+    }
+    createdAt
+    updatedAt
+    _version
+    _deleted
+    _lastChangedAt
+    __typename
+  }
+}
+
+subscription OnUpdateRoute($filter: ModelSubscriptionRouteFilterInput) {
+  onUpdateRoute(filter: $filter) {
+    id
+    name
+    description
+    companyID
+    company {
+      id
+      username
+      name
+      rutaCivica
+      commissionPerTicket
+      createdAt
+      updatedAt
+      _version
+      _deleted
+      _lastChangedAt
+      __typename
+    }
+    devices {
+      nextToken
+      startedAt
+      __typename
+    }
+    points {
+      lat
+      lng
+      name
+      __typename
+    }
+    createdAt
+    updatedAt
+    _version
+    _deleted
+    _lastChangedAt
+    __typename
+  }
+}
+
+subscription OnDeleteRoute($filter: ModelSubscriptionRouteFilterInput) {
+  onDeleteRoute(filter: $filter) {
+    id
+    name
+    description
+    companyID
+    company {
+      id
+      username
+      name
+      rutaCivica
+      commissionPerTicket
+      createdAt
+      updatedAt
+      _version
+      _deleted
+      _lastChangedAt
+      __typename
+    }
+    devices {
+      nextToken
+      startedAt
+      __typename
+    }
+    points {
+      lat
+      lng
+      name
+      __typename
+    }
+    createdAt
+    updatedAt
+    _version
+    _deleted
+    _lastChangedAt
+    __typename
+  }
+}

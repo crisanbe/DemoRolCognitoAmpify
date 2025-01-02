@@ -5,6 +5,7 @@ package com.uen.democognitoauthamplify.start
 import android.util.Log
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
+import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.*
@@ -18,12 +19,15 @@ import androidx.navigation.NavHostController
 import aws.smithy.kotlin.runtime.InternalApi
 import aws.smithy.kotlin.runtime.util.type
 import com.amplifyframework.core.Amplify
+import com.amplifyframework.core.model.query.ObserveQueryOptions
+import com.amplifyframework.core.model.query.QuerySortBy
+import com.amplifyframework.core.model.query.QuerySortOrder
 import com.amplifyframework.core.model.query.predicate.QueryField
 import com.amplifyframework.datastore.DataStoreItemChange
 import com.amplifyframework.datastore.generated.model.Device
 import com.amplifyframework.datastore.generated.model.Use
-import com.uen.democognitoauthamplify.AnimatedProgressBar
 import com.uen.democognitoauthamplify.util.SyncProgressViewModel
+import com.uen.democognitoauthamplify.util.SyncState
 
 @Composable
 fun StartLoadingScreen(
@@ -31,41 +35,24 @@ fun StartLoadingScreen(
     navController: NavHostController,
     viewModel: SyncProgressViewModel = hiltViewModel()
 ) {
-    val progress by viewModel.syncProgress.collectAsState(0)
-    val isSyncComplete by viewModel.isSyncComplete.collectAsState(false)
-    var todoList by remember { mutableStateOf(emptyList<Use>()) }
-    val pageSize = 100
-    var isInitialSyncDone by remember { mutableStateOf(false) }
+    val syncState by viewModel.syncState.collectAsState()
+    val networkStatus by viewModel.networkStatus.collectAsState()
+    val isSyncComplete by viewModel.isSyncComplete.collectAsState()
+    var todoList by remember { mutableStateOf<List<Use>>(emptyList()) }
 
-    // Sincronización inicial
+    // Efectos
     LaunchedEffect(Unit) {
-        if (!isInitialSyncDone) {
-            fetchPaginatedData(username, pageSize) { items ->
+        observeDataWithPredicate(
+            username,
+            { items ->
                 todoList = items
-                isInitialSyncDone = true
-            }
-        }
-    }
-
-    DisposableEffect(isInitialSyncDone) {
-        if (isInitialSyncDone) {
-            val observer = observeDataStoreChanges(username, pageSize) { updatedList ->
-                todoList = updatedList
-            }
-            onDispose { observer() } // Cancelar observación cuando se complete
-        } else {
-            onDispose { } // No hacer nada si no está sincronizado
-        }
-    }
-
-    // Navegación cuando la sincronización esté completa
-    LaunchedEffect(isSyncComplete) {
-        if (isSyncComplete) {
-            Log.i("StartLoadingScreen", "Sincronización completa. Navegando a 'uso'.")
-            navController.navigate("uso") {
-                popUpTo("start") { inclusive = true }
-            }
-        }
+                // Si hay datos, permite la navegación
+                if (isSyncComplete) {
+                    navController.navigate("uso")
+                }
+            },
+            { error -> Log.e("StartScreen", "Error en observación", error) }
+        )
     }
 
     // UI
@@ -77,90 +64,139 @@ fun StartLoadingScreen(
     ) {
         Column(
             horizontalAlignment = Alignment.CenterHorizontally,
-            verticalArrangement = Arrangement.Center
+            verticalArrangement = Arrangement.Center,
+            modifier = Modifier.padding(16.dp)
         ) {
-            when {
-                progress < 100 && !isSyncComplete -> AnimatedProgressBar(viewModel)
-                todoList.isEmpty() -> Text(
-                    text = "Sincronizando datos, por favor espera...",
-                    style = MaterialTheme.typography.bodyMedium,
-                    color = Color.Gray
-                )
-                else -> Text(
-                    text = "Sincronización inicial completada.",
-                    style = MaterialTheme.typography.bodyLarge,
-                    color = Color.Black
-                )
+            when (syncState) {
+                is SyncState.NotStarted -> {
+                    LoadingIndicator("Iniciando sincronización...")
+                }
+                is SyncState.SyncingQueries -> {
+                    LoadingIndicator("Sincronizando datos...")
+                }
+                is SyncState.Ready -> {
+                    SyncCompletedIndicator(todoList.size)
+                }
+                is SyncState.Offline -> {
+                    OfflineIndicator(todoList.isNotEmpty())
+                }
+                is SyncState.Error -> {
+                    ErrorIndicator((syncState as SyncState.Error).exception.message)
+                }
+                else -> Unit
+            }
+
+            // Indicador de conexión
+            if (!networkStatus) {
+                NetworkStatusIndicator()
             }
         }
     }
 }
+private fun observeDataWithPredicate(
+    username: String,
+    onDataReceived: (List<Use>) -> Unit,
+    onError: (Exception) -> Unit
+) {
+    // Buscar por IMEI en la tabla Device
+    val deviceQuery = QueryField.field("imei").eq(username)
 
-private fun fetchPaginatedData(username: String, pageSize: Int, onResult: (List<Use>) -> Unit) {
-    // Consulta la tabla Device con el imei como filtro
-    val deviceQuery = QueryField.field("deviceOwner").eq(username)
-    Amplify.DataStore.query(Device::class.java, deviceQuery,
+    Amplify.DataStore.query(
+        Device::class.java,
+        deviceQuery,
         { devices ->
             if (devices.hasNext()) {
                 val device = devices.next()
-                val deviceID = device.id
+                // Ahora buscar los Uses asociados a este device
+                val useQuery = QueryField.field("deviceID").eq(device.id)
+                val options = ObserveQueryOptions(
+                    useQuery,
+                    listOf(QuerySortBy("createdAt", QuerySortOrder.DESCENDING))
+                )
 
-                // Consulta la tabla Use utilizando el deviceID obtenido
-                val useQuery = QueryField.field("deviceID").eq(deviceID)
-                Amplify.DataStore.query(Use::class.java, useQuery,
-                    { uses ->
-                        val paginatedList = uses.asSequence().take(pageSize).toList()
-                        onResult(paginatedList)
+                Amplify.DataStore.observeQuery(
+                    Use::class.java,
+                    options,
+                    { Log.i("UsoScreen", "Observación iniciada") },
+                    { snapshot ->
+                        onDataReceived(snapshot.items)
+                        Log.i("UsoScreen", "Datos actualizados, sincronizado: ${snapshot.isSynced}")
                     },
-                    { failure -> Log.e("StartLoadingScreen", "Query for Use failed", failure) }
+                    { error -> onError(error) },
+                    { Log.i("UsoScreen", "Observación finalizada") }
                 )
             } else {
-                Log.e("StartLoadingScreen", "No device found for the provided IMEI.")
-                onResult(emptyList()) // Devuelve una lista vacía si no hay dispositivos
+                Log.e("UsoScreen", "No device found for IMEI: $username")
+                onDataReceived(emptyList())
             }
         },
-        { failure -> Log.e("StartLoadingScreen", "Query for Device failed", failure) }
-    )
-}
-
-private fun observeDataStoreChanges(
-    username: String,
-    pageSize: Int,
-    onUpdate: (List<Use>) -> Unit
-): () -> Unit {
-    val cancelable = Amplify.DataStore.observe(
-        Use::class.java,
-        { cancelable -> Log.i("StartLoadingScreen", "Observation started: $cancelable") },
-        { change ->
-            handleDataChange(change, username, pageSize, onUpdate)
-        },
-        { error -> Log.e("StartLoadingScreen", "Observation failed", error) },
-        { Log.i("StartLoadingScreen", "Observation completed") }
-    )
-    return { cancelable.type() } // Asegurar que el observador se cancela correctamente
-}
-
-private fun handleDataChange(
-    change: DataStoreItemChange<*>,
-    username: String,
-    pageSize: Int,
-    onUpdate: (List<Use>) -> Unit
-) {
-    when (change.type()) {
-        DataStoreItemChange.Type.CREATE, DataStoreItemChange.Type.UPDATE -> {
-            val uso = change.item() as Use
-            if (uso.status == false) {
-                val updatedUso = uso.copyOfBuilder().status(true).build()
-                Amplify.DataStore.save(updatedUso,
-                    { Log.i("StartLoadingScreen", "Item marked as synced: ${updatedUso.id}") },
-                    { error -> Log.e("StartLoadingScreen", "Failed to mark item as synced", error) }
-                )
-            }
+        { error ->
+            Log.e("UsoScreen", "Error querying device", error)
+            onDataReceived(emptyList())
         }
-        DataStoreItemChange.Type.DELETE -> Unit
-        else -> Log.w("StartLoadingScreen", "Unhandled change type: ${change.type()}")
-    }
+    )
+}
 
-    // Refrescar datos tras un cambio
-    fetchPaginatedData(username, pageSize, onUpdate)
+@Composable
+private fun LoadingIndicator(message: String) {
+    Column(
+        horizontalAlignment = Alignment.CenterHorizontally,
+        verticalArrangement = Arrangement.spacedBy(8.dp)
+    ) {
+        CircularProgressIndicator(
+            color = MaterialTheme.colorScheme.primary,
+            modifier = Modifier.size(48.dp)
+        )
+        Text(
+            text = message,
+            style = MaterialTheme.typography.bodyMedium,
+            color = Color.Gray
+        )
+    }
+}
+
+@Composable
+private fun SyncCompletedIndicator(itemCount: Int) {
+    Text(
+        text = "Sincronización completada ($itemCount items)",
+        style = MaterialTheme.typography.bodyLarge,
+        color = Color.Black
+    )
+}
+
+@Composable
+private fun OfflineIndicator(hasData: Boolean) {
+    Column(horizontalAlignment = Alignment.CenterHorizontally) {
+        Text(
+            text = "Modo sin conexión activo",
+            style = MaterialTheme.typography.bodyMedium,
+            color = Color.Gray
+        )
+        if (hasData) {
+            Text(
+                text = "Trabajando con datos locales",
+                style = MaterialTheme.typography.bodySmall,
+                color = Color.Gray
+            )
+        }
+    }
+}
+
+@Composable
+private fun ErrorIndicator(errorMessage: String?) {
+    Text(
+        text = "Error en sincronización: $errorMessage",
+        style = MaterialTheme.typography.bodyMedium,
+        color = Color.Red
+    )
+}
+
+@Composable
+private fun NetworkStatusIndicator() {
+    Text(
+        text = "Sin conexión - Los cambios se sincronizarán cuando vuelva la conexión",
+        style = MaterialTheme.typography.bodySmall,
+        color = Color.Gray,
+        modifier = Modifier.padding(top = 8.dp)
+    )
 }

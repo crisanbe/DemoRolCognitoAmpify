@@ -1,26 +1,15 @@
 projects:
-  democognitoamplify:
-    schemaPath: app/src/main/graphql/schema.json
+  demorolcognitoampify:
+    schemaPath: src/graphql/schema.json
     includes:
-      - app/src/main/graphql/**/*.graphql
+      - src/graphql/**/*.js
     excludes:
       - ./amplify/**
     extensions:
       amplify:
-        codeGenTarget: ''
+        codeGenTarget: javascript
         generatedFileName: ''
-        docsFilePath: app/src/main/graphql/com/amazonaws/amplify/generated/graphql
-  DemoCognitoAmplify:
-    schemaPath: app/src/main/graphql/schema.json
-    includes:
-      - app/src/main/graphql/**/*.graphql
-    excludes:
-      - ./amplify/**
-    extensions:
-      amplify:
-        codeGenTarget: ''
-        generatedFileName: ''
-        docsFilePath: app/src/main/graphql/com/amazonaws/amplify/generated/graphql
+        docsFilePath: src/graphql
 extensions:
   amplify:
     version: 3

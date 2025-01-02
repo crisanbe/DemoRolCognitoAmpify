@@ -132,7 +132,7 @@ fun BusItem(bus: Bus, index: Int) {
                 style = MaterialTheme.typography.bodyLarge.copy(fontWeight = FontWeight.Bold)
             )
             Text(
-                text = "Compañia ID: ${bus.company?.name ?: "Unknown"}",
+                text = "Compañia ID: ${bus.plate ?: "Unknown"}",
                 style = MaterialTheme.typography.bodyMedium
             )
         }

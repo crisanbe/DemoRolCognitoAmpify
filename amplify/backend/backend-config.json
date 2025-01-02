@@ -1,13 +1,13 @@
 {
   "api": {
-    "DemoCognitoAmplify": {
+    "demorolcognitoampify": {
       "dependsOn": [
         {
           "attributes": [
             "UserPoolId"
           ],
           "category": "auth",
-          "resourceName": "democognitoamplify"
+          "resourceName": "demorolcognitoampify"
         }
       ],
       "output": {
@@ -20,7 +20,7 @@
           "defaultAuthentication": {
             "authenticationType": "AMAZON_COGNITO_USER_POOLS",
             "userPoolConfig": {
-              "userPoolId": "authdemocognitoamplify"
+              "userPoolId": "authdemorolcognitoampify"
             }
           }
         }
@@ -30,7 +30,7 @@
     }
   },
   "auth": {
-    "democognitoamplify": {
+    "demorolcognitoampify": {
       "customAuth": false,
       "dependsOn": [],
       "providerPlugin": "awscloudformation",
@@ -39,35 +39,35 @@
     }
   },
   "parameters": {
-    "AMPLIFY_auth_democognitoamplify_nativeClientId": {
+    "AMPLIFY_auth_demorolcognitoampify_nativeClientId": {
       "usedBy": [
         {
           "category": "auth",
-          "resourceName": "democognitoamplify"
+          "resourceName": "demorolcognitoampify"
         }
       ]
     },
-    "AMPLIFY_auth_democognitoamplify_userPoolId": {
+    "AMPLIFY_auth_demorolcognitoampify_userPoolId": {
       "usedBy": [
         {
           "category": "auth",
-          "resourceName": "democognitoamplify"
+          "resourceName": "demorolcognitoampify"
         }
       ]
     },
-    "AMPLIFY_auth_democognitoamplify_userPoolName": {
+    "AMPLIFY_auth_demorolcognitoampify_userPoolName": {
       "usedBy": [
         {
           "category": "auth",
-          "resourceName": "democognitoamplify"
+          "resourceName": "demorolcognitoampify"
         }
       ]
     },
-    "AMPLIFY_auth_democognitoamplify_webClientId": {
+    "AMPLIFY_auth_demorolcognitoampify_webClientId": {
       "usedBy": [
         {
           "category": "auth",
-          "resourceName": "democognitoamplify"
+          "resourceName": "demorolcognitoampify"
         }
       ]
     }

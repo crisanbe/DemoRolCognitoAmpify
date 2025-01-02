@@ -108,28 +108,6 @@ object Utils {
         handler.post(runnable)
     }
 
-    private fun fetchDeviceByImei(
-        imei: String,
-        onResult: (Device?) -> Unit
-    ) {
-        val deviceFilter = QueryField.field("imei").eq(imei)
-        Amplify.DataStore.query(Device::class.java, deviceFilter,
-            { devices ->
-                if (devices.hasNext()) {
-                    val device = devices.next()
-                    Log.i("FetchDeviceByImei", "Device found: ${device.id}")
-                    onResult(device)
-                } else {
-                    Log.e("FetchDeviceByImei", "No device found for IMEI: $imei")
-                    onResult(null)
-                }
-            },
-            { error ->
-                Log.e("FetchDeviceByImei", "Failed to fetch device by IMEI", error)
-                onResult(null)
-            }
-        )
-    }
 
 
 }

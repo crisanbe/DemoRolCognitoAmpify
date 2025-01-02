@@ -154,19 +154,5 @@ fun checkGpsStatus(context: Context): Boolean {
 }
 
 fun queryBusPlate(username: String, onResult: (String) -> Unit) {
-    Amplify.DataStore.query(
-        Bus::class.java,
-        { items ->
-            val bus = items.asSequence().find { it.busOwner == username }
-            if (bus != null) {
-                onResult(bus.plate ?: "No disponible")
-            } else {
-                onResult("No disponible")
-            }
-        },
-        { error ->
-            onResult("Error")
-            println("Error querying bus: $error")
-        }
-    )
+
 }

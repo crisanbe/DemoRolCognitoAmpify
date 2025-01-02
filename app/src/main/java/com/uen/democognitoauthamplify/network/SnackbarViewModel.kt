@@ -5,15 +5,21 @@ import android.util.Log
 import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.viewModelScope
 import com.amplifyframework.core.Amplify
+import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.launch
+import javax.inject.Inject
 
-class SnackbarViewModel(application: Application) : AndroidViewModel(application) {
+@HiltViewModel
+class SnackbarViewModel @Inject constructor(
+    application: Application,
+    private val networkMonitor: NetworkMonitor
+) : AndroidViewModel(application) {
+
     private val _snackbarMessage = MutableStateFlow<String?>(null)
     val snackbarMessage: StateFlow<String?> = _snackbarMessage
 
-    private val networkMonitor = NetworkMonitor(application)
     val isConnected = networkMonitor.isConnected
 
     init {
@@ -37,3 +43,4 @@ class SnackbarViewModel(application: Application) : AndroidViewModel(application
         networkMonitor.stopMonitoring()
     }
 }
+

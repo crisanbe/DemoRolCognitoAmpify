@@ -1,21 +1,21 @@
 {
   "version": 1,
   "serviceConfiguration": {
-    "apiName": "DemoCognitoAmplify",
+    "apiName": "demorolcognitoampify",
     "serviceName": "AppSync",
     "defaultAuthType": {
       "mode": "AMAZON_COGNITO_USER_POOLS",
-      "cognitoUserPoolId": "authdemocognitoamplify"
+      "cognitoUserPoolId": "authdemorolcognitoampify"
+    },
+    "conflictResolution": {
+      "defaultResolutionStrategy": {
+        "type": "AUTOMERGE"
+      }
     },
     "additionalAuthTypes": [
       {
         "mode": "AWS_IAM"
       }
-    ],
-    "conflictResolution": {
-      "defaultResolutionStrategy": {
-        "type": "AUTOMERGE"
-      }
-    }
+    ]
   }
 }

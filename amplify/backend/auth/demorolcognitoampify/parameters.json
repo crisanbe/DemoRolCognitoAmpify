@@ -1,6 +1,6 @@
 {
   "authSelections": "userPoolOnly",
-  "resourceName": "democognitoamplify",
+  "resourceName": "demorolcognitoampify",
   "serviceType": "imported",
   "region": "us-east-1",
   "authProvidersUserPool": [],

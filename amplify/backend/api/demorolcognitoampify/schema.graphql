@@ -1,0 +1,88 @@
+type Use @model
+@auth(rules: [
+    { allow: private, operations: [create, read, update, delete] },
+    { allow: groups, groups: ["admin"], operations: [create, read, update, delete] },
+    { allow: groups, groups: ["empresa"], operations: [read] },
+    { allow: groups, groups: ["dispositivo"], operations: [create, read, update] }
+]) {
+    id: ID! @primaryKey
+    cardNumber: String
+    balance: Float
+    sequenceNumber: Int
+    status: Boolean
+    deviceID: ID! @index(name: "byDevice")
+    device: Device @belongsTo(fields: ["deviceID"])
+}
+
+type Device @model
+@auth(rules: [
+    { allow: private, operations: [create, read, update, delete] },
+    { allow: groups, groups: ["admin"], operations: [create, read, update, delete] },
+    { allow: groups, groups: ["empresa"], operations: [read, update] },
+    { allow: groups, groups: ["dispositivo"], operations: [read] }
+]) {
+    id: ID! @primaryKey
+    imei: String! @index(name: "byImei")
+    civicaSerial: String
+    companyID: ID! @index(name: "byCompany")
+    busID: ID! @index(name: "byBus")
+    routeID: ID! @index(name: "byRoute")
+    company: Company @belongsTo(fields: ["companyID"])
+    bus: Bus @belongsTo(fields: ["busID"])
+    route: Route @belongsTo(fields: ["routeID"])
+    uses: [Use] @hasMany(indexName: "byDevice", fields: ["id"])
+    status: Boolean
+}
+
+type Company @model
+@auth(rules: [
+    { allow: private, operations: [create, read, update, delete] },
+    { allow: groups, groups: ["admin"], operations: [create, read, update, delete] },
+    { allow: groups, groups: ["empresa"], operations: [read, update] }
+]) {
+    id: ID! @primaryKey
+    username: String! @index
+    name: String!
+    rutaCivica: String
+    commissionPerTicket: Float
+    devices: [Device] @hasMany(indexName: "byCompany", fields: ["id"])
+    buses: [Bus] @hasMany(indexName: "byCompany", fields: ["id"])
+    routes: [Route] @hasMany(indexName: "byCompany", fields: ["id"])
+}
+
+type Bus @model
+@auth(rules: [
+    { allow: private, operations: [create, read, update, delete] },
+    { allow: groups, groups: ["admin"], operations: [create, read, update, delete] },
+    { allow: groups, groups: ["empresa"], operations: [read, update] },
+    { allow: groups, groups: ["dispositivo"], operations: [read] }
+]) {
+    id: ID! @primaryKey
+    plate: String! @index
+    status: Boolean
+    companyID: ID! @index(name: "byCompany")
+    company: Company @belongsTo(fields: ["companyID"])
+    device: Device @hasOne
+}
+
+type Route @model
+@auth(rules: [
+    { allow: private, operations: [create, read, update, delete] },
+    { allow: groups, groups: ["admin"], operations: [create, read, update, delete] },
+    { allow: groups, groups: ["empresa"], operations: [read, update] },
+    { allow: groups, groups: ["dispositivo"], operations: [read] }
+]) {
+    id: ID! @primaryKey
+    name: String!
+    description: String
+    companyID: ID! @index(name: "byCompany")
+    company: Company @belongsTo(fields: ["companyID"])
+    devices: [Device] @hasMany(indexName: "byRoute", fields: ["id"])
+    points: [Point]
+}
+
+type Point {
+    lat: Float!
+    lng: Float!
+    name: String
+}

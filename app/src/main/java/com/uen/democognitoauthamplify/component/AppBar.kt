@@ -46,7 +46,9 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import com.amplifyframework.core.Amplify
 import com.amplifyframework.core.model.query.predicate.QueryField
+import com.amplifyframework.datastore.generated.model.Bus
 import com.amplifyframework.datastore.generated.model.Company
+import com.amplifyframework.datastore.generated.model.Device
 import kotlinx.coroutines.launch
 
 @Composable
@@ -59,29 +61,15 @@ fun AppBar(
     drawerState: DrawerState = rememberDrawerState(DrawerValue.Closed)
 ) {
     val scope = rememberCoroutineScope()
-    var conductorName by remember { mutableStateOf("Cargando...") }
     var isLoading by remember { mutableStateOf(false) }
+    val companyName = remember { mutableStateOf("Cargando...") }
 
     LaunchedEffect(username) {
         Log.d("MyAmplifyApp", "Iniciando consulta para el usuario: $username")
-        Amplify.DataStore.query(
-            Company::class.java,
-            QueryField.field("transporterOwner").eq(username),
-            { items ->
-                if (items.hasNext()) {
-                    val conductor = items.next()
-                    Log.d("MyAmplifyApp", "Conductor encontrado: ${conductor.name}")
-                    conductorName = conductor.name
-                } else {
-                    Log.d("MyAmplifyApp", "No se encontró ningún conductor con busOwner: $username")
-                    conductorName = "Desconocido"
-                }
-            },
-            { error ->
-                Log.e("MyAmplifyApp", "Error al obtener el nombre del conductor", error)
-                conductorName = "Error al cargar"
-            }
-        )
+
+        queryCompany(username) { plate ->
+            companyName.value = plate
+        }
     }
 
     Box(
@@ -170,7 +158,7 @@ fun AppBar(
             )
             Spacer(modifier = Modifier.width(16.dp))
             Text(
-                text = conductorName,
+                text = companyName.value,
                 style = MaterialTheme.typography.bodyMedium,
                 fontWeight = FontWeight.Bold,
                 color = Color.White
@@ -195,4 +183,7 @@ fun AppBar(
                 )
         )
     }
+}
+fun queryCompany(username: String, onResult: (String) -> Unit) {
+
 }

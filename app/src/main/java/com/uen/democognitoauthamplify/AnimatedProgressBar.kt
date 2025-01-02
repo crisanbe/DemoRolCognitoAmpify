@@ -1,3 +1,4 @@
+/*
 package com.uen.democognitoauthamplify
 
 import androidx.compose.animation.core.*
@@ -95,6 +96,7 @@ fun AnimatedProgressBar(viewModel: SyncProgressViewModel) {
     }
 }
 
+*/
 /*
 @Preview(showBackground = true)
 @Composable
@@ -105,4 +107,6 @@ fun AnimatedProgressBarPreview() {
     }
     AnimatedProgressBar(viewModel = fakeViewModel)
 }
+*//*
+
 */

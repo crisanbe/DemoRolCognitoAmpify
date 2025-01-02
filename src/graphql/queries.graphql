@@ -1,0 +1,837 @@
+# this is an auto generated file. This will be overwritten
+
+query GetUse($id: ID!) {
+  getUse(id: $id) {
+    id
+    cardNumber
+    balance
+    sequenceNumber
+    status
+    deviceID
+    device {
+      id
+      imei
+      civicaSerial
+      companyID
+      busID
+      routeID
+      status
+      createdAt
+      updatedAt
+      _version
+      _deleted
+      _lastChangedAt
+      __typename
+    }
+    createdAt
+    updatedAt
+    _version
+    _deleted
+    _lastChangedAt
+    __typename
+  }
+}
+
+query ListUses(
+  $id: ID
+  $filter: ModelUseFilterInput
+  $limit: Int
+  $nextToken: String
+  $sortDirection: ModelSortDirection
+) {
+  listUses(
+    id: $id
+    filter: $filter
+    limit: $limit
+    nextToken: $nextToken
+    sortDirection: $sortDirection
+  ) {
+    items {
+      id
+      cardNumber
+      balance
+      sequenceNumber
+      status
+      deviceID
+      createdAt
+      updatedAt
+      _version
+      _deleted
+      _lastChangedAt
+      __typename
+    }
+    nextToken
+    startedAt
+    __typename
+  }
+}
+
+query SyncUses(
+  $filter: ModelUseFilterInput
+  $limit: Int
+  $nextToken: String
+  $lastSync: AWSTimestamp
+) {
+  syncUses(
+    filter: $filter
+    limit: $limit
+    nextToken: $nextToken
+    lastSync: $lastSync
+  ) {
+    items {
+      id
+      cardNumber
+      balance
+      sequenceNumber
+      status
+      deviceID
+      createdAt
+      updatedAt
+      _version
+      _deleted
+      _lastChangedAt
+      __typename
+    }
+    nextToken
+    startedAt
+    __typename
+  }
+}
+
+query UsesByDeviceID(
+  $deviceID: ID!
+  $sortDirection: ModelSortDirection
+  $filter: ModelUseFilterInput
+  $limit: Int
+  $nextToken: String
+) {
+  usesByDeviceID(
+    deviceID: $deviceID
+    sortDirection: $sortDirection
+    filter: $filter
+    limit: $limit
+    nextToken: $nextToken
+  ) {
+    items {
+      id
+      cardNumber
+      balance
+      sequenceNumber
+      status
+      deviceID
+      createdAt
+      updatedAt
+      _version
+      _deleted
+      _lastChangedAt
+      __typename
+    }
+    nextToken
+    startedAt
+    __typename
+  }
+}
+
+query GetDevice($id: ID!) {
+  getDevice(id: $id) {
+    id
+    imei
+    civicaSerial
+    companyID
+    busID
+    routeID
+    company {
+      id
+      username
+      name
+      rutaCivica
+      commissionPerTicket
+      createdAt
+      updatedAt
+      _version
+      _deleted
+      _lastChangedAt
+      __typename
+    }
+    bus {
+      id
+      plate
+      status
+      companyID
+      createdAt
+      updatedAt
+      _version
+      _deleted
+      _lastChangedAt
+      busDeviceId
+      __typename
+    }
+    route {
+      id
+      name
+      description
+      companyID
+      createdAt
+      updatedAt
+      _version
+      _deleted
+      _lastChangedAt
+      __typename
+    }
+    uses {
+      nextToken
+      startedAt
+      __typename
+    }
+    status
+    createdAt
+    updatedAt
+    _version
+    _deleted
+    _lastChangedAt
+    __typename
+  }
+}
+
+query ListDevices(
+  $id: ID
+  $filter: ModelDeviceFilterInput
+  $limit: Int
+  $nextToken: String
+  $sortDirection: ModelSortDirection
+) {
+  listDevices(
+    id: $id
+    filter: $filter
+    limit: $limit
+    nextToken: $nextToken
+    sortDirection: $sortDirection
+  ) {
+    items {
+      id
+      imei
+      civicaSerial
+      companyID
+      busID
+      routeID
+      status
+      createdAt
+      updatedAt
+      _version
+      _deleted
+      _lastChangedAt
+      __typename
+    }
+    nextToken
+    startedAt
+    __typename
+  }
+}
+
+query SyncDevices(
+  $filter: ModelDeviceFilterInput
+  $limit: Int
+  $nextToken: String
+  $lastSync: AWSTimestamp
+) {
+  syncDevices(
+    filter: $filter
+    limit: $limit
+    nextToken: $nextToken
+    lastSync: $lastSync
+  ) {
+    items {
+      id
+      imei
+      civicaSerial
+      companyID
+      busID
+      routeID
+      status
+      createdAt
+      updatedAt
+      _version
+      _deleted
+      _lastChangedAt
+      __typename
+    }
+    nextToken
+    startedAt
+    __typename
+  }
+}
+
+query DevicesByImei(
+  $imei: String!
+  $sortDirection: ModelSortDirection
+  $filter: ModelDeviceFilterInput
+  $limit: Int
+  $nextToken: String
+) {
+  devicesByImei(
+    imei: $imei
+    sortDirection: $sortDirection
+    filter: $filter
+    limit: $limit
+    nextToken: $nextToken
+  ) {
+    items {
+      id
+      imei
+      civicaSerial
+      companyID
+      busID
+      routeID
+      status
+      createdAt
+      updatedAt
+      _version
+      _deleted
+      _lastChangedAt
+      __typename
+    }
+    nextToken
+    startedAt
+    __typename
+  }
+}
+
+query DevicesByCompanyID(
+  $companyID: ID!
+  $sortDirection: ModelSortDirection
+  $filter: ModelDeviceFilterInput
+  $limit: Int
+  $nextToken: String
+) {
+  devicesByCompanyID(
+    companyID: $companyID
+    sortDirection: $sortDirection
+    filter: $filter
+    limit: $limit
+    nextToken: $nextToken
+  ) {
+    items {
+      id
+      imei
+      civicaSerial
+      companyID
+      busID
+      routeID
+      status
+      createdAt
+      updatedAt
+      _version
+      _deleted
+      _lastChangedAt
+      __typename
+    }
+    nextToken
+    startedAt
+    __typename
+  }
+}
+
+query DevicesByBusID(
+  $busID: ID!
+  $sortDirection: ModelSortDirection
+  $filter: ModelDeviceFilterInput
+  $limit: Int
+  $nextToken: String
+) {
+  devicesByBusID(
+    busID: $busID
+    sortDirection: $sortDirection
+    filter: $filter
+    limit: $limit
+    nextToken: $nextToken
+  ) {
+    items {
+      id
+      imei
+      civicaSerial
+      companyID
+      busID
+      routeID
+      status
+      createdAt
+      updatedAt
+      _version
+      _deleted
+      _lastChangedAt
+      __typename
+    }
+    nextToken
+    startedAt
+    __typename
+  }
+}
+
+query DevicesByRouteID(
+  $routeID: ID!
+  $sortDirection: ModelSortDirection
+  $filter: ModelDeviceFilterInput
+  $limit: Int
+  $nextToken: String
+) {
+  devicesByRouteID(
+    routeID: $routeID
+    sortDirection: $sortDirection
+    filter: $filter
+    limit: $limit
+    nextToken: $nextToken
+  ) {
+    items {
+      id
+      imei
+      civicaSerial
+      companyID
+      busID
+      routeID
+      status
+      createdAt
+      updatedAt
+      _version
+      _deleted
+      _lastChangedAt
+      __typename
+    }
+    nextToken
+    startedAt
+    __typename
+  }
+}
+
+query GetCompany($id: ID!) {
+  getCompany(id: $id) {
+    id
+    username
+    name
+    rutaCivica
+    commissionPerTicket
+    devices {
+      nextToken
+      startedAt
+      __typename
+    }
+    buses {
+      nextToken
+      startedAt
+      __typename
+    }
+    routes {
+      nextToken
+      startedAt
+      __typename
+    }
+    createdAt
+    updatedAt
+    _version
+    _deleted
+    _lastChangedAt
+    __typename
+  }
+}
+
+query ListCompanies(
+  $id: ID
+  $filter: ModelCompanyFilterInput
+  $limit: Int
+  $nextToken: String
+  $sortDirection: ModelSortDirection
+) {
+  listCompanies(
+    id: $id
+    filter: $filter
+    limit: $limit
+    nextToken: $nextToken
+    sortDirection: $sortDirection
+  ) {
+    items {
+      id
+      username
+      name
+      rutaCivica
+      commissionPerTicket
+      createdAt
+      updatedAt
+      _version
+      _deleted
+      _lastChangedAt
+      __typename
+    }
+    nextToken
+    startedAt
+    __typename
+  }
+}
+
+query SyncCompanies(
+  $filter: ModelCompanyFilterInput
+  $limit: Int
+  $nextToken: String
+  $lastSync: AWSTimestamp
+) {
+  syncCompanies(
+    filter: $filter
+    limit: $limit
+    nextToken: $nextToken
+    lastSync: $lastSync
+  ) {
+    items {
+      id
+      username
+      name
+      rutaCivica
+      commissionPerTicket
+      createdAt
+      updatedAt
+      _version
+      _deleted
+      _lastChangedAt
+      __typename
+    }
+    nextToken
+    startedAt
+    __typename
+  }
+}
+
+query CompaniesByUsername(
+  $username: String!
+  $sortDirection: ModelSortDirection
+  $filter: ModelCompanyFilterInput
+  $limit: Int
+  $nextToken: String
+) {
+  companiesByUsername(
+    username: $username
+    sortDirection: $sortDirection
+    filter: $filter
+    limit: $limit
+    nextToken: $nextToken
+  ) {
+    items {
+      id
+      username
+      name
+      rutaCivica
+      commissionPerTicket
+      createdAt
+      updatedAt
+      _version
+      _deleted
+      _lastChangedAt
+      __typename
+    }
+    nextToken
+    startedAt
+    __typename
+  }
+}
+
+query GetBus($id: ID!) {
+  getBus(id: $id) {
+    id
+    plate
+    status
+    companyID
+    company {
+      id
+      username
+      name
+      rutaCivica
+      commissionPerTicket
+      createdAt
+      updatedAt
+      _version
+      _deleted
+      _lastChangedAt
+      __typename
+    }
+    device {
+      id
+      imei
+      civicaSerial
+      companyID
+      busID
+      routeID
+      status
+      createdAt
+      updatedAt
+      _version
+      _deleted
+      _lastChangedAt
+      __typename
+    }
+    createdAt
+    updatedAt
+    _version
+    _deleted
+    _lastChangedAt
+    busDeviceId
+    __typename
+  }
+}
+
+query ListBuses(
+  $id: ID
+  $filter: ModelBusFilterInput
+  $limit: Int
+  $nextToken: String
+  $sortDirection: ModelSortDirection
+) {
+  listBuses(
+    id: $id
+    filter: $filter
+    limit: $limit
+    nextToken: $nextToken
+    sortDirection: $sortDirection
+  ) {
+    items {
+      id
+      plate
+      status
+      companyID
+      createdAt
+      updatedAt
+      _version
+      _deleted
+      _lastChangedAt
+      busDeviceId
+      __typename
+    }
+    nextToken
+    startedAt
+    __typename
+  }
+}
+
+query SyncBuses(
+  $filter: ModelBusFilterInput
+  $limit: Int
+  $nextToken: String
+  $lastSync: AWSTimestamp
+) {
+  syncBuses(
+    filter: $filter
+    limit: $limit
+    nextToken: $nextToken
+    lastSync: $lastSync
+  ) {
+    items {
+      id
+      plate
+      status
+      companyID
+      createdAt
+      updatedAt
+      _version
+      _deleted
+      _lastChangedAt
+      busDeviceId
+      __typename
+    }
+    nextToken
+    startedAt
+    __typename
+  }
+}
+
+query BusesByPlate(
+  $plate: String!
+  $sortDirection: ModelSortDirection
+  $filter: ModelBusFilterInput
+  $limit: Int
+  $nextToken: String
+) {
+  busesByPlate(
+    plate: $plate
+    sortDirection: $sortDirection
+    filter: $filter
+    limit: $limit
+    nextToken: $nextToken
+  ) {
+    items {
+      id
+      plate
+      status
+      companyID
+      createdAt
+      updatedAt
+      _version
+      _deleted
+      _lastChangedAt
+      busDeviceId
+      __typename
+    }
+    nextToken
+    startedAt
+    __typename
+  }
+}
+
+query BusesByCompanyID(
+  $companyID: ID!
+  $sortDirection: ModelSortDirection
+  $filter: ModelBusFilterInput
+  $limit: Int
+  $nextToken: String
+) {
+  busesByCompanyID(
+    companyID: $companyID
+    sortDirection: $sortDirection
+    filter: $filter
+    limit: $limit
+    nextToken: $nextToken
+  ) {
+    items {
+      id
+      plate
+      status
+      companyID
+      createdAt
+      updatedAt
+      _version
+      _deleted
+      _lastChangedAt
+      busDeviceId
+      __typename
+    }
+    nextToken
+    startedAt
+    __typename
+  }
+}
+
+query GetRoute($id: ID!) {
+  getRoute(id: $id) {
+    id
+    name
+    description
+    companyID
+    company {
+      id
+      username
+      name
+      rutaCivica
+      commissionPerTicket
+      createdAt
+      updatedAt
+      _version
+      _deleted
+      _lastChangedAt
+      __typename
+    }
+    devices {
+      nextToken
+      startedAt
+      __typename
+    }
+    points {
+      lat
+      lng
+      name
+      __typename
+    }
+    createdAt
+    updatedAt
+    _version
+    _deleted
+    _lastChangedAt
+    __typename
+  }
+}
+
+query ListRoutes(
+  $id: ID
+  $filter: ModelRouteFilterInput
+  $limit: Int
+  $nextToken: String
+  $sortDirection: ModelSortDirection
+) {
+  listRoutes(
+    id: $id
+    filter: $filter
+    limit: $limit
+    nextToken: $nextToken
+    sortDirection: $sortDirection
+  ) {
+    items {
+      id
+      name
+      description
+      companyID
+      createdAt
+      updatedAt
+      _version
+      _deleted
+      _lastChangedAt
+      __typename
+    }
+    nextToken
+    startedAt
+    __typename
+  }
+}
+
+query SyncRoutes(
+  $filter: ModelRouteFilterInput
+  $limit: Int
+  $nextToken: String
+  $lastSync: AWSTimestamp
+) {
+  syncRoutes(
+    filter: $filter
+    limit: $limit
+    nextToken: $nextToken
+    lastSync: $lastSync
+  ) {
+    items {
+      id
+      name
+      description
+      companyID
+      createdAt
+      updatedAt
+      _version
+      _deleted
+      _lastChangedAt
+      __typename
+    }
+    nextToken
+    startedAt
+    __typename
+  }
+}
+
+query RoutesByCompanyID(
+  $companyID: ID!
+  $sortDirection: ModelSortDirection
+  $filter: ModelRouteFilterInput
+  $limit: Int
+  $nextToken: String
+) {
+  routesByCompanyID(
+    companyID: $companyID
+    sortDirection: $sortDirection
+    filter: $filter
+    limit: $limit
+    nextToken: $nextToken
+  ) {
+    items {
+      id
+      name
+      description
+      companyID
+      createdAt
+      updatedAt
+      _version
+      _deleted
+      _lastChangedAt
+      __typename
+    }
+    nextToken
+    startedAt
+    __typename
+  }
+}

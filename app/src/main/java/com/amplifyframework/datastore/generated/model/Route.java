@@ -1,7 +1,7 @@
 package com.amplifyframework.datastore.generated.model;
 
 import com.amplifyframework.core.model.annotations.BelongsTo;
-import com.amplifyframework.core.model.annotations.HasOne;
+import com.amplifyframework.core.model.annotations.HasMany;
 import com.amplifyframework.core.model.temporal.Temporal;
 import com.amplifyframework.core.model.ModelIdentifier;
 
@@ -22,31 +22,30 @@ import com.amplifyframework.core.model.query.predicate.QueryField;
 
 import static com.amplifyframework.core.model.query.predicate.QueryField.field;
 
-/** This is an auto generated class representing the Bus type in your schema. */
+/** This is an auto generated class representing the Route type in your schema. */
 @SuppressWarnings("all")
-@ModelConfig(pluralName = "Buses", type = Model.Type.USER, version = 1, authRules = {
+@ModelConfig(pluralName = "Routes", type = Model.Type.USER, version = 1, authRules = {
   @AuthRule(allow = AuthStrategy.PRIVATE, operations = { ModelOperation.CREATE, ModelOperation.READ, ModelOperation.UPDATE, ModelOperation.DELETE }),
   @AuthRule(allow = AuthStrategy.GROUPS, groupClaim = "cognito:groups", groups = { "admin" }, provider = "userPools", operations = { ModelOperation.CREATE, ModelOperation.READ, ModelOperation.UPDATE, ModelOperation.DELETE }),
   @AuthRule(allow = AuthStrategy.GROUPS, groupClaim = "cognito:groups", groups = { "empresa" }, provider = "userPools", operations = { ModelOperation.READ, ModelOperation.UPDATE }),
   @AuthRule(allow = AuthStrategy.GROUPS, groupClaim = "cognito:groups", groups = { "dispositivo" }, provider = "userPools", operations = { ModelOperation.READ })
 })
 @Index(name = "undefined", fields = {"id"})
-@Index(name = "busesByPlate", fields = {"plate"})
 @Index(name = "byCompany", fields = {"companyID"})
-public final class Bus implements Model {
-  public static final QueryField ID = field("Bus", "id");
-  public static final QueryField PLATE = field("Bus", "plate");
-  public static final QueryField STATUS = field("Bus", "status");
-  public static final QueryField COMPANY = field("Bus", "companyID");
-  public static final QueryField BUS_DEVICE_ID = field("Bus", "busDeviceId");
+public final class Route implements Model {
+  public static final QueryField ID = field("Route", "id");
+  public static final QueryField NAME = field("Route", "name");
+  public static final QueryField DESCRIPTION = field("Route", "description");
+  public static final QueryField COMPANY = field("Route", "companyID");
+  public static final QueryField POINTS = field("Route", "points");
   private final @ModelField(targetType="ID", isRequired = true) String id;
-  private final @ModelField(targetType="String", isRequired = true) String plate;
-  private final @ModelField(targetType="Boolean") Boolean status;
+  private final @ModelField(targetType="String", isRequired = true) String name;
+  private final @ModelField(targetType="String") String description;
   private final @ModelField(targetType="Company") @BelongsTo(targetName = "companyID", targetNames = {"companyID"}, type = Company.class) Company company;
-  private final @ModelField(targetType="Device") @HasOne(associatedWith = "bus", type = Device.class) Device device = null;
+  private final @ModelField(targetType="Device") @HasMany(associatedWith = "route", type = Device.class) List<Device> devices = null;
+  private final @ModelField(targetType="Point") List<Point> points;
   private @ModelField(targetType="AWSDateTime", isReadOnly = true) Temporal.DateTime createdAt;
   private @ModelField(targetType="AWSDateTime", isReadOnly = true) Temporal.DateTime updatedAt;
-  private final @ModelField(targetType="ID") String busDeviceId;
   /** @deprecated This API is internal to Amplify and should not be used. */
   @Deprecated
    public String resolveIdentifier() {
@@ -57,20 +56,24 @@ public final class Bus implements Model {
       return id;
   }
   
-  public String getPlate() {
-      return plate;
+  public String getName() {
+      return name;
   }
   
-  public Boolean getStatus() {
-      return status;
+  public String getDescription() {
+      return description;
   }
   
   public Company getCompany() {
       return company;
   }
   
-  public Device getDevice() {
-      return device;
+  public List<Device> getDevices() {
+      return devices;
+  }
+  
+  public List<Point> getPoints() {
+      return points;
   }
   
   public Temporal.DateTime getCreatedAt() {
@@ -81,16 +84,12 @@ public final class Bus implements Model {
       return updatedAt;
   }
   
-  public String getBusDeviceId() {
-      return busDeviceId;
-  }
-  
-  private Bus(String id, String plate, Boolean status, Company company, String busDeviceId) {
+  private Route(String id, String name, String description, Company company, List<Point> points) {
     this.id = id;
-    this.plate = plate;
-    this.status = status;
+    this.name = name;
+    this.description = description;
     this.company = company;
-    this.busDeviceId = busDeviceId;
+    this.points = points;
   }
   
   @Override
@@ -100,14 +99,14 @@ public final class Bus implements Model {
       } else if(obj == null || getClass() != obj.getClass()) {
         return false;
       } else {
-      Bus bus = (Bus) obj;
-      return ObjectsCompat.equals(getId(), bus.getId()) &&
-              ObjectsCompat.equals(getPlate(), bus.getPlate()) &&
-              ObjectsCompat.equals(getStatus(), bus.getStatus()) &&
-              ObjectsCompat.equals(getCompany(), bus.getCompany()) &&
-              ObjectsCompat.equals(getCreatedAt(), bus.getCreatedAt()) &&
-              ObjectsCompat.equals(getUpdatedAt(), bus.getUpdatedAt()) &&
-              ObjectsCompat.equals(getBusDeviceId(), bus.getBusDeviceId());
+      Route route = (Route) obj;
+      return ObjectsCompat.equals(getId(), route.getId()) &&
+              ObjectsCompat.equals(getName(), route.getName()) &&
+              ObjectsCompat.equals(getDescription(), route.getDescription()) &&
+              ObjectsCompat.equals(getCompany(), route.getCompany()) &&
+              ObjectsCompat.equals(getPoints(), route.getPoints()) &&
+              ObjectsCompat.equals(getCreatedAt(), route.getCreatedAt()) &&
+              ObjectsCompat.equals(getUpdatedAt(), route.getUpdatedAt());
       }
   }
   
@@ -115,12 +114,12 @@ public final class Bus implements Model {
    public int hashCode() {
     return new StringBuilder()
       .append(getId())
-      .append(getPlate())
-      .append(getStatus())
+      .append(getName())
+      .append(getDescription())
       .append(getCompany())
+      .append(getPoints())
       .append(getCreatedAt())
       .append(getUpdatedAt())
-      .append(getBusDeviceId())
       .toString()
       .hashCode();
   }
@@ -128,19 +127,19 @@ public final class Bus implements Model {
   @Override
    public String toString() {
     return new StringBuilder()
-      .append("Bus {")
+      .append("Route {")
       .append("id=" + String.valueOf(getId()) + ", ")
-      .append("plate=" + String.valueOf(getPlate()) + ", ")
-      .append("status=" + String.valueOf(getStatus()) + ", ")
+      .append("name=" + String.valueOf(getName()) + ", ")
+      .append("description=" + String.valueOf(getDescription()) + ", ")
       .append("company=" + String.valueOf(getCompany()) + ", ")
+      .append("points=" + String.valueOf(getPoints()) + ", ")
       .append("createdAt=" + String.valueOf(getCreatedAt()) + ", ")
-      .append("updatedAt=" + String.valueOf(getUpdatedAt()) + ", ")
-      .append("busDeviceId=" + String.valueOf(getBusDeviceId()))
+      .append("updatedAt=" + String.valueOf(getUpdatedAt()))
       .append("}")
       .toString();
   }
   
-  public static PlateStep builder() {
+  public static NameStep builder() {
       return new Builder();
   }
   
@@ -152,8 +151,8 @@ public final class Bus implements Model {
    * @param id the id of the existing item this instance will represent
    * @return an instance of this model with only ID populated
    */
-  public static Bus justId(String id) {
-    return new Bus(
+  public static Route justId(String id) {
+    return new Route(
       id,
       null,
       null,
@@ -164,65 +163,65 @@ public final class Bus implements Model {
   
   public CopyOfBuilder copyOfBuilder() {
     return new CopyOfBuilder(id,
-      plate,
-      status,
+      name,
+      description,
       company,
-      busDeviceId);
+      points);
   }
-  public interface PlateStep {
-    BuildStep plate(String plate);
+  public interface NameStep {
+    BuildStep name(String name);
   }
   
 
   public interface BuildStep {
-    Bus build();
+    Route build();
     BuildStep id(String id);
-    BuildStep status(Boolean status);
+    BuildStep description(String description);
     BuildStep company(Company company);
-    BuildStep busDeviceId(String busDeviceId);
+    BuildStep points(List<Point> points);
   }
   
 
-  public static class Builder implements PlateStep, BuildStep {
+  public static class Builder implements NameStep, BuildStep {
     private String id;
-    private String plate;
-    private Boolean status;
+    private String name;
+    private String description;
     private Company company;
-    private String busDeviceId;
+    private List<Point> points;
     public Builder() {
       
     }
     
-    private Builder(String id, String plate, Boolean status, Company company, String busDeviceId) {
+    private Builder(String id, String name, String description, Company company, List<Point> points) {
       this.id = id;
-      this.plate = plate;
-      this.status = status;
+      this.name = name;
+      this.description = description;
       this.company = company;
-      this.busDeviceId = busDeviceId;
+      this.points = points;
     }
     
     @Override
-     public Bus build() {
+     public Route build() {
         String id = this.id != null ? this.id : UUID.randomUUID().toString();
         
-        return new Bus(
+        return new Route(
           id,
-          plate,
-          status,
+          name,
+          description,
           company,
-          busDeviceId);
+          points);
     }
     
     @Override
-     public BuildStep plate(String plate) {
-        Objects.requireNonNull(plate);
-        this.plate = plate;
+     public BuildStep name(String name) {
+        Objects.requireNonNull(name);
+        this.name = name;
         return this;
     }
     
     @Override
-     public BuildStep status(Boolean status) {
-        this.status = status;
+     public BuildStep description(String description) {
+        this.description = description;
         return this;
     }
     
@@ -233,8 +232,8 @@ public final class Bus implements Model {
     }
     
     @Override
-     public BuildStep busDeviceId(String busDeviceId) {
-        this.busDeviceId = busDeviceId;
+     public BuildStep points(List<Point> points) {
+        this.points = points;
         return this;
     }
     
@@ -250,19 +249,19 @@ public final class Bus implements Model {
   
 
   public final class CopyOfBuilder extends Builder {
-    private CopyOfBuilder(String id, String plate, Boolean status, Company company, String busDeviceId) {
-      super(id, plate, status, company, busDeviceId);
-      Objects.requireNonNull(plate);
+    private CopyOfBuilder(String id, String name, String description, Company company, List<Point> points) {
+      super(id, name, description, company, points);
+      Objects.requireNonNull(name);
     }
     
     @Override
-     public CopyOfBuilder plate(String plate) {
-      return (CopyOfBuilder) super.plate(plate);
+     public CopyOfBuilder name(String name) {
+      return (CopyOfBuilder) super.name(name);
     }
     
     @Override
-     public CopyOfBuilder status(Boolean status) {
-      return (CopyOfBuilder) super.status(status);
+     public CopyOfBuilder description(String description) {
+      return (CopyOfBuilder) super.description(description);
     }
     
     @Override
@@ -271,15 +270,15 @@ public final class Bus implements Model {
     }
     
     @Override
-     public CopyOfBuilder busDeviceId(String busDeviceId) {
-      return (CopyOfBuilder) super.busDeviceId(busDeviceId);
+     public CopyOfBuilder points(List<Point> points) {
+      return (CopyOfBuilder) super.points(points);
     }
   }
   
 
-  public static class BusIdentifier extends ModelIdentifier<Bus> {
+  public static class RouteIdentifier extends ModelIdentifier<Route> {
     private static final long serialVersionUID = 1L;
-    public BusIdentifier(String id) {
+    public RouteIdentifier(String id) {
       super(id);
     }
   }

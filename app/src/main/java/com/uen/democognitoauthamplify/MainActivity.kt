@@ -2,6 +2,7 @@ package com.uen.democognitoauthamplify
 
 import android.annotation.SuppressLint
 import android.os.Bundle
+import android.util.Log
 import android.view.View
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
@@ -14,8 +15,11 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.Button
+import androidx.compose.material3.ButtonDefaults
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Snackbar
+import androidx.compose.material3.SnackbarDuration
 import androidx.compose.material3.SnackbarHost
 import androidx.compose.material3.SnackbarHostState
 import androidx.compose.material3.Surface
@@ -37,6 +41,7 @@ import androidx.compose.ui.unit.dp
 import androidx.core.view.WindowInsetsControllerCompat
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.viewmodel.compose.viewModel
+import com.amplifyframework.core.Amplify
 import com.amplifyframework.ui.authenticator.ui.Authenticator
 import com.uen.democognitoauthamplify.component.authenticateUser
 import com.uen.democognitoauthamplify.navegation.AppNavigation
@@ -44,6 +49,7 @@ import com.uen.democognitoauthamplify.network.NetworkMonitor
 import com.uen.democognitoauthamplify.network.SnackbarViewModel
 import com.uen.democognitoauthamplify.ui.theme.DemoCognitoAuthAmplifyTheme
 import com.uen.democognitoauthamplify.util.SyncProgressViewModel
+import com.uen.democognitoauthamplify.util.SyncState
 import com.uen.democognitoauthamplify.util.Utils
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.launch
@@ -51,38 +57,28 @@ import javax.inject.Inject
 
 @AndroidEntryPoint
 class MainActivity : ComponentActivity() {
-    @Inject
-    lateinit var monitor: NetworkMonitor
-    private var isAuthenticated = false
-
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        /*authenticateUser(this) { success ->
-            isAuthenticated = success
-            if (isAuthenticated) {
-                runOnUiThread {*/
 
-                    // Habilitar diseño edge-to-edge
-                    enableEdgeToEdge()
+        // Habilitar diseño edge-to-edge
+        enableEdgeToEdge()
 
-                    window.statusBarColor = android.graphics.Color.parseColor("#619B22") // Verde
-                    WindowInsetsControllerCompat(window, window.decorView).isAppearanceLightStatusBars = false
+        // Configurar barra de estado
+        window.statusBarColor = android.graphics.Color.parseColor("#619B22")
+        WindowInsetsControllerCompat(window, window.decorView).isAppearanceLightStatusBars = false
 
-                    monitor.startMonitoring()
-                    setContent {
-                        val syncProgressViewModel: SyncProgressViewModel = hiltViewModel() // Inyectar ViewModel con Hilt
-                        val snackbarViewModel: SnackbarViewModel = viewModel() // Instancia global del ViewModel
-                        DemoCognitoAuthAmplifyTheme {
-                            AppWithGlobalSnackbar(
-                                snackbarViewModel = snackbarViewModel,
-                                syncProgressViewModel = syncProgressViewModel
-                            )
-                        }
-                    }
-                }
-           // }
-     //   }
-    //}
+        setContent {
+            val syncProgressViewModel: SyncProgressViewModel = hiltViewModel()
+            val snackbarViewModel: SnackbarViewModel = viewModel()
+
+            DemoCognitoAuthAmplifyTheme {
+                AppWithGlobalSnackbar(
+                    snackbarViewModel = snackbarViewModel,
+                    syncProgressViewModel = syncProgressViewModel
+                )
+            }
+        }
+    }
 }
 
 @SuppressLint("UnusedMaterial3ScaffoldPaddingParameter")
@@ -93,65 +89,90 @@ fun AppWithGlobalSnackbar(
 ) {
     val snackbarHostState = remember { SnackbarHostState() }
     val scope = rememberCoroutineScope()
+    val isConnected by snackbarViewModel.isConnected.collectAsState(initial = false)
+    val syncState by syncProgressViewModel.syncState.collectAsState()
 
-    // Observa los mensajes de Snackbar
-    LaunchedEffect(snackbarViewModel.snackbarMessage.collectAsState().value) {
-        snackbarViewModel.snackbarMessage.value?.let { message ->
-            scope.launch {
-                snackbarHostState.showSnackbar(message)
-            }
-            snackbarViewModel.hideSnackbar()
+    // Manejar cambios de conectividad
+    LaunchedEffect(isConnected) {
+        if (isConnected) {
+            syncProgressViewModel.startSync()
+            snackbarViewModel.showSnackbar("Conexión Online 🛜. Sincronización iniciada.")
+        } else {
+            snackbarViewModel.showSnackbar("Modo Offline 🌐.")
         }
     }
 
-    val progress by syncProgressViewModel.syncProgress.collectAsState(initial = 0)
-    // Observa los cambios de conectividad con LiveData
-    val isConnected by snackbarViewModel.isConnected.collectAsState(initial = true)
+    // Observar estado de sincronización
+    LaunchedEffect(syncState) {
+        when (syncState) {
+            is SyncState.Error -> {
+                snackbarViewModel.showSnackbar(
+                    "Error de sincronización: ${(syncState as SyncState.Error).exception.message}"
+                )
+            }
+            is SyncState.Ready -> {
+                snackbarViewModel.showSnackbar("Sincronización completada")
+            }
+            is SyncState.Offline -> {
+                snackbarViewModel.showSnackbar("Trabajando en modo offline")
+            }
+            else -> Unit
+        }
+    }
 
-    LaunchedEffect(isConnected) {
-        val message = if (isConnected) "Conexión Online 🛜." else "Modo Offline 🌐."
-        snackbarViewModel.showSnackbar(message)
+    // Manejar mensajes de Snackbar
+    LaunchedEffect(snackbarViewModel.snackbarMessage.collectAsState().value) {
+        snackbarViewModel.snackbarMessage.value?.let { message ->
+            scope.launch {
+                snackbarHostState.showSnackbar(
+                    message = message,
+                    actionLabel = "Cerrar",
+                    duration = SnackbarDuration.Short
+                )
+            }
+            snackbarViewModel.hideSnackbar()
+        }
     }
 
     Scaffold(
         snackbarHost = {
             SnackbarHost(hostState = snackbarHostState) { data ->
                 Snackbar(
+                    modifier = Modifier.padding(16.dp),
                     action = {
-                        Button(onClick = { data.dismiss() }) {
+                        Button(
+                            onClick = { data.dismiss() },
+                            colors = ButtonDefaults.buttonColors(
+                                containerColor = MaterialTheme.colorScheme.primaryContainer
+                            )
+                        ) {
                             Text("Cerrar")
                         }
                     }
-                ) { Text(data.visuals.message) }
+                ) {
+                    Text(
+                        text = data.visuals.message,
+                        style = MaterialTheme.typography.bodyMedium
+                    )
+                }
             }
         }
     ) {
         Surface {
-            Authenticator(
-            ) { signedInState ->
-                AppNavigation(signedInState.user.username, snackbarViewModel, syncProgressViewModel)
-            }
-        }
-    }
-}
+            Authenticator() { signedInState ->
+                val username = signedInState.user.username
 
-@Preview(showBackground = true)
-@Composable
-fun PreviewAuthenticator() {
-    DemoCognitoAuthAmplifyTheme {
-        Box(
-            modifier = Modifier
-                .fillMaxWidth()
-                .background(Color(0xFF619B22)) // Color verde para el header
-                .padding(vertical = 16.dp), // Espaciado interno
-            contentAlignment = Alignment.Center
-        ) {
-            Image(
-                painter = painterResource(id = R.drawable.logo_civica), // Reemplaza con tu recurso de logo
-                contentDescription = "Logotipo Cívica",
-                modifier = Modifier.height(50.dp), // Tamaño del logo
-                contentScale = ContentScale.Fit
-            )
+                // Iniciar sincronización después de autenticación
+                LaunchedEffect(username) {
+                    syncProgressViewModel.startSync()
+                }
+
+                AppNavigation(
+                    username = username,
+                    snackbarViewModel = snackbarViewModel,
+                    syncProgressViewModel = syncProgressViewModel
+                )
+            }
         }
     }
 }

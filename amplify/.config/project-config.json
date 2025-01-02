@@ -1,13 +1,14 @@
 {
-  "providers": [
-    "awscloudformation"
-  ],
-  "projectName": "RolCognitoAmplify",
+  "whyContinueWithGen1": "Prefer not to answer",
+  "projectName": "DemoRolCognitoAmpify",
   "version": "3.1",
   "frontend": "android",
   "android": {
     "config": {
       "ResDir": "app/src/main/res"
     }
-  }
+  },
+  "providers": [
+    "awscloudformation"
+  ]
 }

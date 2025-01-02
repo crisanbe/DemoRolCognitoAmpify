@@ -1,7 +1,6 @@
 package com.amplifyframework.datastore.generated.model;
 
 import com.amplifyframework.core.model.annotations.BelongsTo;
-import com.amplifyframework.core.model.annotations.HasOne;
 import com.amplifyframework.core.model.annotations.HasMany;
 import com.amplifyframework.core.model.temporal.Temporal;
 import com.amplifyframework.core.model.ModelIdentifier;
@@ -26,30 +25,34 @@ import static com.amplifyframework.core.model.query.predicate.QueryField.field;
 /** This is an auto generated class representing the Device type in your schema. */
 @SuppressWarnings("all")
 @ModelConfig(pluralName = "Devices", type = Model.Type.USER, version = 1, authRules = {
-  @AuthRule(allow = AuthStrategy.OWNER, ownerField = "deviceOwner", identityClaim = "cognito:username", provider = "userPools", operations = { ModelOperation.CREATE, ModelOperation.UPDATE, ModelOperation.DELETE, ModelOperation.READ }),
-  @AuthRule(allow = AuthStrategy.GROUPS, groupClaim = "cognito:groups", groups = { "Administrador" }, provider = "userPools", operations = { ModelOperation.CREATE, ModelOperation.UPDATE, ModelOperation.DELETE, ModelOperation.READ }),
-  @AuthRule(allow = AuthStrategy.GROUPS, groupClaim = "cognito:groups", groups = { "Empresa" }, provider = "userPools", operations = { ModelOperation.READ, ModelOperation.UPDATE })
+  @AuthRule(allow = AuthStrategy.PRIVATE, operations = { ModelOperation.CREATE, ModelOperation.READ, ModelOperation.UPDATE, ModelOperation.DELETE }),
+  @AuthRule(allow = AuthStrategy.GROUPS, groupClaim = "cognito:groups", groups = { "admin" }, provider = "userPools", operations = { ModelOperation.CREATE, ModelOperation.READ, ModelOperation.UPDATE, ModelOperation.DELETE }),
+  @AuthRule(allow = AuthStrategy.GROUPS, groupClaim = "cognito:groups", groups = { "empresa" }, provider = "userPools", operations = { ModelOperation.READ, ModelOperation.UPDATE }),
+  @AuthRule(allow = AuthStrategy.GROUPS, groupClaim = "cognito:groups", groups = { "dispositivo" }, provider = "userPools", operations = { ModelOperation.READ })
 })
+@Index(name = "undefined", fields = {"id"})
+@Index(name = "byImei", fields = {"imei"})
 @Index(name = "byCompany", fields = {"companyID"})
+@Index(name = "byBus", fields = {"busID"})
+@Index(name = "byRoute", fields = {"routeID"})
 public final class Device implements Model {
   public static final QueryField ID = field("Device", "id");
   public static final QueryField IMEI = field("Device", "imei");
   public static final QueryField CIVICA_SERIAL = field("Device", "civicaSerial");
-  public static final QueryField LAST_EDITOR_ID = field("Device", "lastEditorId");
-  public static final QueryField DEVICE_OWNER = field("Device", "deviceOwner");
   public static final QueryField COMPANY = field("Device", "companyID");
-  public static final QueryField DEVICE_BUS_ID = field("Device", "deviceBusId");
+  public static final QueryField BUS = field("Device", "busID");
+  public static final QueryField ROUTE = field("Device", "routeID");
+  public static final QueryField STATUS = field("Device", "status");
   private final @ModelField(targetType="ID", isRequired = true) String id;
-  private final @ModelField(targetType="String") String imei;
+  private final @ModelField(targetType="String", isRequired = true) String imei;
   private final @ModelField(targetType="String") String civicaSerial;
-  private final @ModelField(targetType="Int") Integer lastEditorId;
-  private final @ModelField(targetType="String") String deviceOwner;
   private final @ModelField(targetType="Company") @BelongsTo(targetName = "companyID", targetNames = {"companyID"}, type = Company.class) Company company;
-  private final @ModelField(targetType="Bus") @HasOne(associatedWith = "id", type = Bus.class) Bus bus = null;
+  private final @ModelField(targetType="Bus") @BelongsTo(targetName = "busID", targetNames = {"busID"}, type = Bus.class) Bus bus;
+  private final @ModelField(targetType="Route") @BelongsTo(targetName = "routeID", targetNames = {"routeID"}, type = Route.class) Route route;
   private final @ModelField(targetType="Use") @HasMany(associatedWith = "device", type = Use.class) List<Use> uses = null;
+  private final @ModelField(targetType="Boolean") Boolean status;
   private @ModelField(targetType="AWSDateTime", isReadOnly = true) Temporal.DateTime createdAt;
   private @ModelField(targetType="AWSDateTime", isReadOnly = true) Temporal.DateTime updatedAt;
-  private final @ModelField(targetType="ID") String deviceBusId;
   /** @deprecated This API is internal to Amplify and should not be used. */
   @Deprecated
    public String resolveIdentifier() {
@@ -68,14 +71,6 @@ public final class Device implements Model {
       return civicaSerial;
   }
   
-  public Integer getLastEditorId() {
-      return lastEditorId;
-  }
-  
-  public String getDeviceOwner() {
-      return deviceOwner;
-  }
-  
   public Company getCompany() {
       return company;
   }
@@ -84,8 +79,16 @@ public final class Device implements Model {
       return bus;
   }
   
+  public Route getRoute() {
+      return route;
+  }
+  
   public List<Use> getUses() {
       return uses;
+  }
+  
+  public Boolean getStatus() {
+      return status;
   }
   
   public Temporal.DateTime getCreatedAt() {
@@ -96,18 +99,14 @@ public final class Device implements Model {
       return updatedAt;
   }
   
-  public String getDeviceBusId() {
-      return deviceBusId;
-  }
-  
-  private Device(String id, String imei, String civicaSerial, Integer lastEditorId, String deviceOwner, Company company, String deviceBusId) {
+  private Device(String id, String imei, String civicaSerial, Company company, Bus bus, Route route, Boolean status) {
     this.id = id;
     this.imei = imei;
     this.civicaSerial = civicaSerial;
-    this.lastEditorId = lastEditorId;
-    this.deviceOwner = deviceOwner;
     this.company = company;
-    this.deviceBusId = deviceBusId;
+    this.bus = bus;
+    this.route = route;
+    this.status = status;
   }
   
   @Override
@@ -121,12 +120,12 @@ public final class Device implements Model {
       return ObjectsCompat.equals(getId(), device.getId()) &&
               ObjectsCompat.equals(getImei(), device.getImei()) &&
               ObjectsCompat.equals(getCivicaSerial(), device.getCivicaSerial()) &&
-              ObjectsCompat.equals(getLastEditorId(), device.getLastEditorId()) &&
-              ObjectsCompat.equals(getDeviceOwner(), device.getDeviceOwner()) &&
               ObjectsCompat.equals(getCompany(), device.getCompany()) &&
+              ObjectsCompat.equals(getBus(), device.getBus()) &&
+              ObjectsCompat.equals(getRoute(), device.getRoute()) &&
+              ObjectsCompat.equals(getStatus(), device.getStatus()) &&
               ObjectsCompat.equals(getCreatedAt(), device.getCreatedAt()) &&
-              ObjectsCompat.equals(getUpdatedAt(), device.getUpdatedAt()) &&
-              ObjectsCompat.equals(getDeviceBusId(), device.getDeviceBusId());
+              ObjectsCompat.equals(getUpdatedAt(), device.getUpdatedAt());
       }
   }
   
@@ -136,12 +135,12 @@ public final class Device implements Model {
       .append(getId())
       .append(getImei())
       .append(getCivicaSerial())
-      .append(getLastEditorId())
-      .append(getDeviceOwner())
       .append(getCompany())
+      .append(getBus())
+      .append(getRoute())
+      .append(getStatus())
       .append(getCreatedAt())
       .append(getUpdatedAt())
-      .append(getDeviceBusId())
       .toString()
       .hashCode();
   }
@@ -153,17 +152,17 @@ public final class Device implements Model {
       .append("id=" + String.valueOf(getId()) + ", ")
       .append("imei=" + String.valueOf(getImei()) + ", ")
       .append("civicaSerial=" + String.valueOf(getCivicaSerial()) + ", ")
-      .append("lastEditorId=" + String.valueOf(getLastEditorId()) + ", ")
-      .append("deviceOwner=" + String.valueOf(getDeviceOwner()) + ", ")
       .append("company=" + String.valueOf(getCompany()) + ", ")
+      .append("bus=" + String.valueOf(getBus()) + ", ")
+      .append("route=" + String.valueOf(getRoute()) + ", ")
+      .append("status=" + String.valueOf(getStatus()) + ", ")
       .append("createdAt=" + String.valueOf(getCreatedAt()) + ", ")
-      .append("updatedAt=" + String.valueOf(getUpdatedAt()) + ", ")
-      .append("deviceBusId=" + String.valueOf(getDeviceBusId()))
+      .append("updatedAt=" + String.valueOf(getUpdatedAt()))
       .append("}")
       .toString();
   }
   
-  public static BuildStep builder() {
+  public static ImeiStep builder() {
       return new Builder();
   }
   
@@ -191,43 +190,47 @@ public final class Device implements Model {
     return new CopyOfBuilder(id,
       imei,
       civicaSerial,
-      lastEditorId,
-      deviceOwner,
       company,
-      deviceBusId);
+      bus,
+      route,
+      status);
   }
-  public interface BuildStep {
-    Device build();
-    BuildStep id(String id);
+  public interface ImeiStep {
     BuildStep imei(String imei);
-    BuildStep civicaSerial(String civicaSerial);
-    BuildStep lastEditorId(Integer lastEditorId);
-    BuildStep deviceOwner(String deviceOwner);
-    BuildStep company(Company company);
-    BuildStep deviceBusId(String deviceBusId);
   }
   
 
-  public static class Builder implements BuildStep {
+  public interface BuildStep {
+    Device build();
+    BuildStep id(String id);
+    BuildStep civicaSerial(String civicaSerial);
+    BuildStep company(Company company);
+    BuildStep bus(Bus bus);
+    BuildStep route(Route route);
+    BuildStep status(Boolean status);
+  }
+  
+
+  public static class Builder implements ImeiStep, BuildStep {
     private String id;
     private String imei;
     private String civicaSerial;
-    private Integer lastEditorId;
-    private String deviceOwner;
     private Company company;
-    private String deviceBusId;
+    private Bus bus;
+    private Route route;
+    private Boolean status;
     public Builder() {
       
     }
     
-    private Builder(String id, String imei, String civicaSerial, Integer lastEditorId, String deviceOwner, Company company, String deviceBusId) {
+    private Builder(String id, String imei, String civicaSerial, Company company, Bus bus, Route route, Boolean status) {
       this.id = id;
       this.imei = imei;
       this.civicaSerial = civicaSerial;
-      this.lastEditorId = lastEditorId;
-      this.deviceOwner = deviceOwner;
       this.company = company;
-      this.deviceBusId = deviceBusId;
+      this.bus = bus;
+      this.route = route;
+      this.status = status;
     }
     
     @Override
@@ -238,14 +241,15 @@ public final class Device implements Model {
           id,
           imei,
           civicaSerial,
-          lastEditorId,
-          deviceOwner,
           company,
-          deviceBusId);
+          bus,
+          route,
+          status);
     }
     
     @Override
      public BuildStep imei(String imei) {
+        Objects.requireNonNull(imei);
         this.imei = imei;
         return this;
     }
@@ -257,26 +261,26 @@ public final class Device implements Model {
     }
     
     @Override
-     public BuildStep lastEditorId(Integer lastEditorId) {
-        this.lastEditorId = lastEditorId;
-        return this;
-    }
-    
-    @Override
-     public BuildStep deviceOwner(String deviceOwner) {
-        this.deviceOwner = deviceOwner;
-        return this;
-    }
-    
-    @Override
      public BuildStep company(Company company) {
         this.company = company;
         return this;
     }
     
     @Override
-     public BuildStep deviceBusId(String deviceBusId) {
-        this.deviceBusId = deviceBusId;
+     public BuildStep bus(Bus bus) {
+        this.bus = bus;
+        return this;
+    }
+    
+    @Override
+     public BuildStep route(Route route) {
+        this.route = route;
+        return this;
+    }
+    
+    @Override
+     public BuildStep status(Boolean status) {
+        this.status = status;
         return this;
     }
     
@@ -292,9 +296,9 @@ public final class Device implements Model {
   
 
   public final class CopyOfBuilder extends Builder {
-    private CopyOfBuilder(String id, String imei, String civicaSerial, Integer lastEditorId, String deviceOwner, Company company, String deviceBusId) {
-      super(id, imei, civicaSerial, lastEditorId, deviceOwner, company, deviceBusId);
-      
+    private CopyOfBuilder(String id, String imei, String civicaSerial, Company company, Bus bus, Route route, Boolean status) {
+      super(id, imei, civicaSerial, company, bus, route, status);
+      Objects.requireNonNull(imei);
     }
     
     @Override
@@ -308,23 +312,23 @@ public final class Device implements Model {
     }
     
     @Override
-     public CopyOfBuilder lastEditorId(Integer lastEditorId) {
-      return (CopyOfBuilder) super.lastEditorId(lastEditorId);
-    }
-    
-    @Override
-     public CopyOfBuilder deviceOwner(String deviceOwner) {
-      return (CopyOfBuilder) super.deviceOwner(deviceOwner);
-    }
-    
-    @Override
      public CopyOfBuilder company(Company company) {
       return (CopyOfBuilder) super.company(company);
     }
     
     @Override
-     public CopyOfBuilder deviceBusId(String deviceBusId) {
-      return (CopyOfBuilder) super.deviceBusId(deviceBusId);
+     public CopyOfBuilder bus(Bus bus) {
+      return (CopyOfBuilder) super.bus(bus);
+    }
+    
+    @Override
+     public CopyOfBuilder route(Route route) {
+      return (CopyOfBuilder) super.route(route);
+    }
+    
+    @Override
+     public CopyOfBuilder status(Boolean status) {
+      return (CopyOfBuilder) super.status(status);
     }
   }
   

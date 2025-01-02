@@ -24,25 +24,26 @@ import static com.amplifyframework.core.model.query.predicate.QueryField.field;
 /** This is an auto generated class representing the Company type in your schema. */
 @SuppressWarnings("all")
 @ModelConfig(pluralName = "Companies", type = Model.Type.USER, version = 1, authRules = {
-  @AuthRule(allow = AuthStrategy.OWNER, ownerField = "companyOwner", identityClaim = "cognito:username", provider = "userPools", operations = { ModelOperation.CREATE, ModelOperation.UPDATE, ModelOperation.DELETE, ModelOperation.READ }),
-  @AuthRule(allow = AuthStrategy.GROUPS, groupClaim = "cognito:groups", groups = { "Administrador" }, provider = "userPools", operations = { ModelOperation.CREATE, ModelOperation.UPDATE, ModelOperation.DELETE, ModelOperation.READ }),
-  @AuthRule(allow = AuthStrategy.GROUPS, groupClaim = "cognito:groups", groups = { "Dispositivo" }, provider = "userPools", operations = { ModelOperation.READ })
+  @AuthRule(allow = AuthStrategy.PRIVATE, operations = { ModelOperation.CREATE, ModelOperation.READ, ModelOperation.UPDATE, ModelOperation.DELETE }),
+  @AuthRule(allow = AuthStrategy.GROUPS, groupClaim = "cognito:groups", groups = { "admin" }, provider = "userPools", operations = { ModelOperation.CREATE, ModelOperation.READ, ModelOperation.UPDATE, ModelOperation.DELETE }),
+  @AuthRule(allow = AuthStrategy.GROUPS, groupClaim = "cognito:groups", groups = { "empresa" }, provider = "userPools", operations = { ModelOperation.READ, ModelOperation.UPDATE })
 })
+@Index(name = "undefined", fields = {"id"})
+@Index(name = "companiesByUsername", fields = {"username"})
 public final class Company implements Model {
   public static final QueryField ID = field("Company", "id");
+  public static final QueryField USERNAME = field("Company", "username");
   public static final QueryField NAME = field("Company", "name");
   public static final QueryField RUTA_CIVICA = field("Company", "rutaCivica");
   public static final QueryField COMMISSION_PER_TICKET = field("Company", "commissionPerTicket");
-  public static final QueryField LAST_EDITOR_ID = field("Company", "lastEditorId");
-  public static final QueryField COMPANY_OWNER = field("Company", "companyOwner");
   private final @ModelField(targetType="ID", isRequired = true) String id;
-  private final @ModelField(targetType="String") String name;
+  private final @ModelField(targetType="String", isRequired = true) String username;
+  private final @ModelField(targetType="String", isRequired = true) String name;
   private final @ModelField(targetType="String") String rutaCivica;
   private final @ModelField(targetType="Float") Double commissionPerTicket;
-  private final @ModelField(targetType="Int") Integer lastEditorId;
-  private final @ModelField(targetType="String") String companyOwner;
   private final @ModelField(targetType="Device") @HasMany(associatedWith = "company", type = Device.class) List<Device> devices = null;
   private final @ModelField(targetType="Bus") @HasMany(associatedWith = "company", type = Bus.class) List<Bus> buses = null;
+  private final @ModelField(targetType="Route") @HasMany(associatedWith = "company", type = Route.class) List<Route> routes = null;
   private @ModelField(targetType="AWSDateTime", isReadOnly = true) Temporal.DateTime createdAt;
   private @ModelField(targetType="AWSDateTime", isReadOnly = true) Temporal.DateTime updatedAt;
   /** @deprecated This API is internal to Amplify and should not be used. */
@@ -53,6 +54,10 @@ public final class Company implements Model {
   
   public String getId() {
       return id;
+  }
+  
+  public String getUsername() {
+      return username;
   }
   
   public String getName() {
@@ -67,20 +72,16 @@ public final class Company implements Model {
       return commissionPerTicket;
   }
   
-  public Integer getLastEditorId() {
-      return lastEditorId;
-  }
-  
-  public String getCompanyOwner() {
-      return companyOwner;
-  }
-  
   public List<Device> getDevices() {
       return devices;
   }
   
   public List<Bus> getBuses() {
       return buses;
+  }
+  
+  public List<Route> getRoutes() {
+      return routes;
   }
   
   public Temporal.DateTime getCreatedAt() {
@@ -91,13 +92,12 @@ public final class Company implements Model {
       return updatedAt;
   }
   
-  private Company(String id, String name, String rutaCivica, Double commissionPerTicket, Integer lastEditorId, String companyOwner) {
+  private Company(String id, String username, String name, String rutaCivica, Double commissionPerTicket) {
     this.id = id;
+    this.username = username;
     this.name = name;
     this.rutaCivica = rutaCivica;
     this.commissionPerTicket = commissionPerTicket;
-    this.lastEditorId = lastEditorId;
-    this.companyOwner = companyOwner;
   }
   
   @Override
@@ -109,11 +109,10 @@ public final class Company implements Model {
       } else {
       Company company = (Company) obj;
       return ObjectsCompat.equals(getId(), company.getId()) &&
+              ObjectsCompat.equals(getUsername(), company.getUsername()) &&
               ObjectsCompat.equals(getName(), company.getName()) &&
               ObjectsCompat.equals(getRutaCivica(), company.getRutaCivica()) &&
               ObjectsCompat.equals(getCommissionPerTicket(), company.getCommissionPerTicket()) &&
-              ObjectsCompat.equals(getLastEditorId(), company.getLastEditorId()) &&
-              ObjectsCompat.equals(getCompanyOwner(), company.getCompanyOwner()) &&
               ObjectsCompat.equals(getCreatedAt(), company.getCreatedAt()) &&
               ObjectsCompat.equals(getUpdatedAt(), company.getUpdatedAt());
       }
@@ -123,11 +122,10 @@ public final class Company implements Model {
    public int hashCode() {
     return new StringBuilder()
       .append(getId())
+      .append(getUsername())
       .append(getName())
       .append(getRutaCivica())
       .append(getCommissionPerTicket())
-      .append(getLastEditorId())
-      .append(getCompanyOwner())
       .append(getCreatedAt())
       .append(getUpdatedAt())
       .toString()
@@ -139,18 +137,17 @@ public final class Company implements Model {
     return new StringBuilder()
       .append("Company {")
       .append("id=" + String.valueOf(getId()) + ", ")
+      .append("username=" + String.valueOf(getUsername()) + ", ")
       .append("name=" + String.valueOf(getName()) + ", ")
       .append("rutaCivica=" + String.valueOf(getRutaCivica()) + ", ")
       .append("commissionPerTicket=" + String.valueOf(getCommissionPerTicket()) + ", ")
-      .append("lastEditorId=" + String.valueOf(getLastEditorId()) + ", ")
-      .append("companyOwner=" + String.valueOf(getCompanyOwner()) + ", ")
       .append("createdAt=" + String.valueOf(getCreatedAt()) + ", ")
       .append("updatedAt=" + String.valueOf(getUpdatedAt()))
       .append("}")
       .toString();
   }
   
-  public static BuildStep builder() {
+  public static UsernameStep builder() {
       return new Builder();
   }
   
@@ -168,48 +165,51 @@ public final class Company implements Model {
       null,
       null,
       null,
-      null,
       null
     );
   }
   
   public CopyOfBuilder copyOfBuilder() {
     return new CopyOfBuilder(id,
+      username,
       name,
       rutaCivica,
-      commissionPerTicket,
-      lastEditorId,
-      companyOwner);
+      commissionPerTicket);
   }
-  public interface BuildStep {
-    Company build();
-    BuildStep id(String id);
-    BuildStep name(String name);
-    BuildStep rutaCivica(String rutaCivica);
-    BuildStep commissionPerTicket(Double commissionPerTicket);
-    BuildStep lastEditorId(Integer lastEditorId);
-    BuildStep companyOwner(String companyOwner);
+  public interface UsernameStep {
+    NameStep username(String username);
   }
   
 
-  public static class Builder implements BuildStep {
+  public interface NameStep {
+    BuildStep name(String name);
+  }
+  
+
+  public interface BuildStep {
+    Company build();
+    BuildStep id(String id);
+    BuildStep rutaCivica(String rutaCivica);
+    BuildStep commissionPerTicket(Double commissionPerTicket);
+  }
+  
+
+  public static class Builder implements UsernameStep, NameStep, BuildStep {
     private String id;
+    private String username;
     private String name;
     private String rutaCivica;
     private Double commissionPerTicket;
-    private Integer lastEditorId;
-    private String companyOwner;
     public Builder() {
       
     }
     
-    private Builder(String id, String name, String rutaCivica, Double commissionPerTicket, Integer lastEditorId, String companyOwner) {
+    private Builder(String id, String username, String name, String rutaCivica, Double commissionPerTicket) {
       this.id = id;
+      this.username = username;
       this.name = name;
       this.rutaCivica = rutaCivica;
       this.commissionPerTicket = commissionPerTicket;
-      this.lastEditorId = lastEditorId;
-      this.companyOwner = companyOwner;
     }
     
     @Override
@@ -218,15 +218,22 @@ public final class Company implements Model {
         
         return new Company(
           id,
+          username,
           name,
           rutaCivica,
-          commissionPerTicket,
-          lastEditorId,
-          companyOwner);
+          commissionPerTicket);
+    }
+    
+    @Override
+     public NameStep username(String username) {
+        Objects.requireNonNull(username);
+        this.username = username;
+        return this;
     }
     
     @Override
      public BuildStep name(String name) {
+        Objects.requireNonNull(name);
         this.name = name;
         return this;
     }
@@ -243,18 +250,6 @@ public final class Company implements Model {
         return this;
     }
     
-    @Override
-     public BuildStep lastEditorId(Integer lastEditorId) {
-        this.lastEditorId = lastEditorId;
-        return this;
-    }
-    
-    @Override
-     public BuildStep companyOwner(String companyOwner) {
-        this.companyOwner = companyOwner;
-        return this;
-    }
-    
     /**
      * @param id id
      * @return Current Builder instance, for fluent method chaining
@@ -267,9 +262,15 @@ public final class Company implements Model {
   
 
   public final class CopyOfBuilder extends Builder {
-    private CopyOfBuilder(String id, String name, String rutaCivica, Double commissionPerTicket, Integer lastEditorId, String companyOwner) {
-      super(id, name, rutaCivica, commissionPerTicket, lastEditorId, companyOwner);
-      
+    private CopyOfBuilder(String id, String username, String name, String rutaCivica, Double commissionPerTicket) {
+      super(id, username, name, rutaCivica, commissionPerTicket);
+      Objects.requireNonNull(username);
+      Objects.requireNonNull(name);
+    }
+    
+    @Override
+     public CopyOfBuilder username(String username) {
+      return (CopyOfBuilder) super.username(username);
     }
     
     @Override
@@ -285,16 +286,6 @@ public final class Company implements Model {
     @Override
      public CopyOfBuilder commissionPerTicket(Double commissionPerTicket) {
       return (CopyOfBuilder) super.commissionPerTicket(commissionPerTicket);
-    }
-    
-    @Override
-     public CopyOfBuilder lastEditorId(Integer lastEditorId) {
-      return (CopyOfBuilder) super.lastEditorId(lastEditorId);
-    }
-    
-    @Override
-     public CopyOfBuilder companyOwner(String companyOwner) {
-      return (CopyOfBuilder) super.companyOwner(companyOwner);
     }
   }
   

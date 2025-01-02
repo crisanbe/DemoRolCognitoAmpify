@@ -19,6 +19,6 @@ dependencyResolutionManagement {
     }
 }
 
-rootProject.name = "DemoCognitoAuthAmplify"
+rootProject.name = "DemoRolCognitoAuthAmplify"
 include(":app")
  
